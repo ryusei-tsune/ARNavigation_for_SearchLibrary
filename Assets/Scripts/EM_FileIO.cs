@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using System.Text;
 using UnityEngine;
 using Unity.Collections;
 using UnityEngine.UI;
@@ -15,11 +16,13 @@ public class EM_FileIO : MonoBehaviour
     [SerializeField] InputField inputField;
     [SerializeField] Text statusText;
     [SerializeField] Button saveButton;
+    string worldMapath;
     string featurePath;
     string markerPath;
 
     public void SaveButton()
     {
+        statusText.enabled = true;
         if (inputField.text == "")
         {
             inputField.placeholder.GetComponent<Text>().color = Color.red;
@@ -29,8 +32,14 @@ public class EM_FileIO : MonoBehaviour
         {
             inputField.placeholder.GetComponent<Text>().color = Color.grey;
             inputField.placeholder.GetComponent<Text>().text = "Filename";
-            featurePath = Application.dataPath + "/" + inputField.text + "-Feature.txt";
-            markerPath = Application.dataPath + "/" + inputField.text + "-Marker.txt";
+
+            worldMapath = Application.persistentDataPath + "/" + inputField.text + "-test.txt";
+            featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
+            markerPath = Application.persistentDataPath + "/" + inputField.text + "-Object.RowMap";
+            if (File.Exists(featurePath))
+            {
+                File.Delete(featurePath);
+            }
 #if UNITY_IOS
             StartCoroutine(SaveFeature());
 #endif
@@ -54,15 +63,26 @@ public class EM_FileIO : MonoBehaviour
             statusText.text = "Session serialization failed.";
             yield break;
         }
-
         var worldMap = request.GetWorldMap();
         request.Dispose();
         SaveAndDisposeWorldMap(worldMap);
+        statusText.text = featurePath;
     }
     void SaveAndDisposeWorldMap(ARWorldMap worldMap)
     {
         var data = worldMap.Serialize(Allocator.Temp);
         var file = File.Open(featurePath, FileMode.Create);
+        try
+        {
+            using (StreamWriter sw = new StreamWriter(worldMapath, false, Encoding.GetEncoding("utf-8")))
+            {
+                foreach(var tmpdata in data.ToArray()){
+                    sw.WriteLine(tmpdata);
+                }
+            }
+        } catch(UnityException e){
+            statusText.text = e.ToString();
+        }
         var writer = new BinaryWriter(file);
         writer.Write(data.ToArray());
         writer.Close();
