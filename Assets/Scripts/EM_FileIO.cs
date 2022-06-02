@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -17,8 +18,11 @@ public class EM_FileIO : MonoBehaviour
     [SerializeField] Text statusText;
     [SerializeField] Button saveButton;
     string worldMapath;
+    string worldMapath1;
+    string worldMapath2;
     string featurePath;
     string markerPath;
+    // List<ARSession> ARsessions;
 
     public void SaveButton()
     {
@@ -34,6 +38,8 @@ public class EM_FileIO : MonoBehaviour
             inputField.placeholder.GetComponent<Text>().text = "Filename";
 
             worldMapath = Application.persistentDataPath + "/" + inputField.text + "-test.txt";
+            worldMapath1 = Application.persistentDataPath + "/" + inputField.text + "-test1.txt";
+            worldMapath2 = Application.persistentDataPath + "/" + inputField.text + "-test2.txt";
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             markerPath = Application.persistentDataPath + "/" + inputField.text + "-Object.RowMap";
             if (File.Exists(featurePath))
@@ -64,25 +70,15 @@ public class EM_FileIO : MonoBehaviour
             yield break;
         }
         var worldMap = request.GetWorldMap();
+        
         request.Dispose();
         SaveAndDisposeWorldMap(worldMap);
-        statusText.text = featurePath;
     }
     void SaveAndDisposeWorldMap(ARWorldMap worldMap)
     {
         var data = worldMap.Serialize(Allocator.Temp);
         var file = File.Open(featurePath, FileMode.Create);
-        try
-        {
-            using (StreamWriter sw = new StreamWriter(worldMapath, false, Encoding.GetEncoding("utf-8")))
-            {
-                foreach(var tmpdata in data.ToArray()){
-                    sw.WriteLine(tmpdata);
-                }
-            }
-        } catch(UnityException e){
-            statusText.text = e.ToString();
-        }
+        
         var writer = new BinaryWriter(file);
         writer.Write(data.ToArray());
         writer.Close();
