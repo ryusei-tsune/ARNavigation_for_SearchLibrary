@@ -17,6 +17,8 @@ public class EM_FileIO : MonoBehaviour
     [SerializeField] Text statusText;
     [SerializeField] Button saveButton;
     string worldMapath;
+    string worldMapath1;
+    string worldMapath2;
     string featurePath;
     string markerPath;
 
@@ -34,6 +36,8 @@ public class EM_FileIO : MonoBehaviour
             inputField.placeholder.GetComponent<Text>().text = "Filename";
 
             worldMapath = Application.persistentDataPath + "/" + inputField.text + "-test.txt";
+            worldMapath1 = Application.persistentDataPath + "/" + inputField.text + "-test1.txt";
+            worldMapath2 = Application.persistentDataPath + "/" + inputField.text + "-test2.txt";
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             markerPath = Application.persistentDataPath + "/" + inputField.text + "-Object.RowMap";
             if (File.Exists(featurePath))
@@ -63,6 +67,17 @@ public class EM_FileIO : MonoBehaviour
             statusText.text = "Session serialization failed.";
             yield break;
         }
+        try
+        {
+            using (StreamWriter sw = new StreamWriter(worldMapath1, false, Encoding.GetEncoding("utf-8")))
+            {
+                sw.WriteLine(request.ToString());
+            }
+        }
+        catch (UnityException e)
+        {
+            statusText.text = e.ToString();
+        }
         var worldMap = request.GetWorldMap();
         request.Dispose();
         SaveAndDisposeWorldMap(worldMap);
@@ -76,11 +91,14 @@ public class EM_FileIO : MonoBehaviour
         {
             using (StreamWriter sw = new StreamWriter(worldMapath, false, Encoding.GetEncoding("utf-8")))
             {
-                foreach(var tmpdata in data.ToArray()){
+                foreach (var tmpdata in data.ToArray())
+                {
                     sw.WriteLine(tmpdata);
                 }
             }
-        } catch(UnityException e){
+        }
+        catch (UnityException e)
+        {
             statusText.text = e.ToString();
         }
         var writer = new BinaryWriter(file);
