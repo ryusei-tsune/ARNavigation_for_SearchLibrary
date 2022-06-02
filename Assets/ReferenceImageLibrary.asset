@@ -16,16 +16,6 @@ MonoBehaviour:
   m_GuidHigh: 15542628602771651257
   m_Images:
   - m_SerializedGuid:
-      m_GuidLow: 4653147410004245716
-      m_GuidHigh: 1604800658335266228
-    m_SerializedTextureGuid:
-      m_GuidLow: 897518793289605279
-      m_GuidHigh: 4760448095374486603
-    m_Size: {x: 0.05, y: 0.042833146}
-    m_SpecifySize: 1
-    m_Name: bird
-    m_Texture: {fileID: 0}
-  - m_SerializedGuid:
       m_GuidLow: 5497445674476306871
       m_GuidHigh: 16722939639902494593
     m_SerializedTextureGuid:

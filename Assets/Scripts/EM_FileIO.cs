@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -21,6 +22,7 @@ public class EM_FileIO : MonoBehaviour
     string worldMapath2;
     string featurePath;
     string markerPath;
+    // List<ARSession> ARsessions;
 
     public void SaveButton()
     {
@@ -67,40 +69,16 @@ public class EM_FileIO : MonoBehaviour
             statusText.text = "Session serialization failed.";
             yield break;
         }
-        try
-        {
-            using (StreamWriter sw = new StreamWriter(worldMapath1, false, Encoding.GetEncoding("utf-8")))
-            {
-                sw.WriteLine(request.ToString());
-            }
-        }
-        catch (UnityException e)
-        {
-            statusText.text = e.ToString();
-        }
         var worldMap = request.GetWorldMap();
+        
         request.Dispose();
         SaveAndDisposeWorldMap(worldMap);
-        statusText.text = featurePath;
     }
     void SaveAndDisposeWorldMap(ARWorldMap worldMap)
     {
         var data = worldMap.Serialize(Allocator.Temp);
         var file = File.Open(featurePath, FileMode.Create);
-        try
-        {
-            using (StreamWriter sw = new StreamWriter(worldMapath, false, Encoding.GetEncoding("utf-8")))
-            {
-                foreach (var tmpdata in data.ToArray())
-                {
-                    sw.WriteLine(tmpdata);
-                }
-            }
-        }
-        catch (UnityException e)
-        {
-            statusText.text = e.ToString();
-        }
+        
         var writer = new BinaryWriter(file);
         writer.Write(data.ToArray());
         writer.Close();

@@ -108,7 +108,6 @@ public class DetectARMarker : MonoBehaviour
     {
         if (inputField.text != "")
         {
-            statusText.text = "during PositionSave";
             string filename = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.txt";
             try
             {
@@ -116,9 +115,7 @@ public class DetectARMarker : MonoBehaviour
                 {
                     foreach (var marker in markerPosList)
                     {
-                        statusText.text = "json";
                         string json = marker.Key + ": (" + marker.Value.x + ", " + marker.Value.y + ", " + marker.Value.z + ")";
-                        statusText.text = "filename";
                         sw.WriteLine(json);
                     }
                 }
