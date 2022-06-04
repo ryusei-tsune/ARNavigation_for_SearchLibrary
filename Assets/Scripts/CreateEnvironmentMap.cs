@@ -45,8 +45,8 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     private void Start()
     {
-        statusText.enabled = false;
         raycastManager = GetComponent<ARRaycastManager>();
+        CreateMesh();
     }
     private void Update()
     {
@@ -174,25 +174,33 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     public void CreateMesh()
     {
+        statusText.text = "aaaa";
         mesh = new GameObject("mesh");
         mesh.AddComponent<NavMeshObject>();
         mesh.AddComponent<NavMeshManager>();
         statusText.enabled = true;
         particles.Clear();
-        navManager = (GameObject.FindGameObjectsWithTag("MapGameObject") == null) ? Instantiate(mapInstantiate).GetComponent<NavMeshManager>() : GameObject.FindGameObjectWithTag("MapGameObject").GetComponent<NavMeshManager>();
+        statusText.text = "bbbb";
+        if (GameObject.FindGameObjectsWithTag("MapGameObject") == null){
+            navManager = Instantiate(mapInstantiate).GetComponent<NavMeshManager>();
+        } else {
+            Destroy(GameObject.FindGameObjectWithTag("MapGameObject"));
+            navManager = Instantiate(mapInstantiate).GetComponent<NavMeshManager>();
+        }
         newNavMesh = new GameObject("New NavMesh");
-
+        statusText.text = "cccc";
         newNavMesh.transform.parent = navManager.transform;
         newNavMesh.AddComponent<NavMeshObject>();
         newNavMesh.AddComponent<NavMeshModifier>();
         newNavMesh.AddComponent<MeshFilter>();
         newNavMesh.AddComponent<MeshRenderer>();
         newNavMesh.tag = "mapNavMesh";
-
-        navMesh = newNavMesh.GetComponent<NavMeshObject>();
+        statusText.text = "dddd";
+        //navMesh = newNavMesh.GetComponent<NavMeshObject>();
         MeshRenderer mRenderer = newNavMesh.GetComponent<MeshRenderer>();
         mRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         mRenderer.receiveShadows = false;
+        statusText.text = "eeee";
         if (navManager.meshMaterial)
         {
             navManager.meshMaterial.color = new Color(0.0f, 0.0f, 1.0f, 0.5f);
@@ -204,7 +212,7 @@ public class CreateEnvironmentMap : MonoBehaviour
             mRenderer.enabled = false;
         }
     }
-    public void mapButton()
+    public void MapButton()
     {
         landmark = false;
         // PTタグを付与した選択地点のパーティクルを検出
@@ -216,25 +224,27 @@ public class CreateEnvironmentMap : MonoBehaviour
         }
         else
         {
-            confirmMap();
+            ConfirmMap();
         }
     }
 
-    public void landMarkButton()
+    public void LandMarkButton()
     {
         placing = false;
-        confirmMap();
-        if (!landmark)
-        {
-            landmark = true;
-        }
-        else
-        {
-            landmark = false;
-        }
+        ConfirmMap();
+        // if (!landmark)
+        // {
+        //     landmark = true;
+        // }
+        // else
+        // {
+        //     landmark = false;
+        // }
+        landmark = true;
+        statusText.text = "landmark";
     }
     // 指定した歩行可能領域の確定
-    private void confirmMap()
+    private void ConfirmMap()
     {
         GameObject[] particleList = GameObject.FindGameObjectsWithTag("PT");
         foreach (var item in particleList)
