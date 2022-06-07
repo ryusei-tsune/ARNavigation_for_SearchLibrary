@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using NavMeshExtension;
 public class CreateEnvironmentMap : MonoBehaviour
 {
@@ -31,8 +31,8 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     [SerializeField] GameObject elevator;
 
-    [SerializeField] GameObject landMark; // 目的地となる物体
-    private List<GameObject> landMarkLists = new List<GameObject>(); // 目的地の情報を全て保持
+    [SerializeField] GameObject destination; // 目的地となる物体
+    private List<GameObject> destinationLists = new List<GameObject>(); // 目的地の情報を全て保持
     private int landMarkSelect = -1;
     // [SerializeField] GameObject upStair; // 階層移動地点
     // private List<GameObject> upStairs = new List<GameObject>(); // 目的地の情報を全て保持
@@ -86,30 +86,21 @@ public class CreateEnvironmentMap : MonoBehaviour
 
                     if (placing)
                     {
-                        statusText.text = "aaa";
                         particles.Add(Instantiate(particle));
                         particles[particles.Count - 1].transform.position = touchPosition;
-                        statusText.text = "bbb";
 
                         if (navMesh.current.Contains(dragIndex))
                         {
-                            statusText.text = "ddd";
                             navMesh.AddPoint(navMesh.transform.TransformPoint(navMesh.list[dragIndex]));
-                            statusText.text = "ggg";
                         }
                         else if (dragIndex >= 0)
                         {
-                            statusText.text = "eee";
                             navMesh.AddPoint(dragIndex);
-                            statusText.text = "ggg";
                         }
                         else
                         {
-                            statusText.text = "fff";
                             navMesh.AddPoint(touchPosition);
-                            statusText.text = "ggg";
                         }
-                        statusText.text = "ccc";
                         navMesh.CreateMesh();
                     }
                     else
@@ -119,20 +110,18 @@ public class CreateEnvironmentMap : MonoBehaviour
                             if (landMarkSelect != -1)
                             {
                                 // 目的地の物体を移動
-                                landMarkLists[landMarkSelect].transform.position = touchPosition;
+                                destinationLists[landMarkSelect].transform.position = touchPosition;
                             }
                             else
                             {
                                 // 新規で目的地の物体を作成
-                                landMarkLists.Add(Instantiate(landMark, touchPosition, Quaternion.identity));
-                                landMarkSelect = landMarkLists.Count - 1;
+                                destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
+                                landMarkSelect = destinationLists.Count - 1;
                             }
                         }//  else {
                         //     elevatorObject.transform.position = touchPosition;
                         // }
                     }
-                    statusText.text = "hhh";
-
                 }
             }
         }

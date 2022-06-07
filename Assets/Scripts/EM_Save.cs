@@ -18,9 +18,6 @@ public class EM_Save : MonoBehaviour
     [SerializeField] InputField inputField;
     [SerializeField] Text statusText;
     [SerializeField] Button saveButton;
-    string worldMapath;
-    string worldMapath1;
-    string worldMapath2;
     string featurePath;
     string objectPath;
     // List<ARSession> ARsessions;
@@ -39,7 +36,7 @@ public class EM_Save : MonoBehaviour
             inputField.placeholder.GetComponent<Text>().text = "Filename";
             
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
-            objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.RowMap";
+            objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -117,9 +114,8 @@ public class EM_Save : MonoBehaviour
 
         try
         {
-            using (StreamWriter sw = new StreamWriter(objectPath, true, Encoding.GetEncoding("utf-8")))
+            using (StreamWriter sw = new StreamWriter(objectPath, false, Encoding.GetEncoding("utf-8")))
             {
-
                 string json = JsonUtility.ToJson(root);
                 sw.WriteLine(json);
             }
