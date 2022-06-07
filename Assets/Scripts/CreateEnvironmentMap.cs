@@ -105,15 +105,18 @@ public class CreateEnvironmentMap : MonoBehaviour
                     }
                     else
                     {
+                        statusText.text = landmark.ToString();
                         if (landmark)
                         {
                             if (landMarkSelect != -1)
                             {
+                                statusText.text = "bbbb";
                                 // 目的地の物体を移動
                                 destinationLists[landMarkSelect].transform.position = touchPosition;
                             }
                             else
                             {
+                                statusText.text = "aaaa";
                                 // 新規で目的地の物体を作成
                                 destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
                                 landMarkSelect = destinationLists.Count - 1;
@@ -217,6 +220,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     public void MapButton()
     {
         landmark = false;
+        landMarkSelect = -1;
         // PTタグを付与した選択地点のパーティクルを検出
         if (!placing)
         {
