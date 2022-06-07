@@ -21,7 +21,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     List<GameObject> particles = new List<GameObject>();
     [SerializeField] Vector3[] allPoints;
     private List<int> selected = new List<int>(); // 必要ないかも
-    private static Vector3 yValue;
+    private static Vector3 yValue= Vector3.zero;
     private static bool placing = false;
     private static bool landmark = false;
 
@@ -45,7 +45,7 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     private void Start()
     {
-        raycastManager = GetComponent<ARRaycastManager>();
+        raycastManager = GameObject.FindGameObjectWithTag("ARSessionOrigin").GetComponent<ARRaycastManager>();
         CreateMesh();
     }
     private void Update()
@@ -61,6 +61,7 @@ public class CreateEnvironmentMap : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
             {
+               
                 return;
             }
             else
@@ -77,26 +78,38 @@ public class CreateEnvironmentMap : MonoBehaviour
                     {
                         touchPosition.y = yValue.y;
                     }
+
                     // navMeshに登録されている点を配列で取得
                     allPoints = ConvertAllPoints();
+
                     int dragIndex = FindClosest(touch);
+
                     if (placing)
                     {
+                        statusText.text = "aaa";
                         particles.Add(Instantiate(particle));
                         particles[particles.Count - 1].transform.position = touchPosition;
+                        statusText.text = "bbb";
 
                         if (navMesh.current.Contains(dragIndex))
                         {
+                            statusText.text = "ddd";
                             navMesh.AddPoint(navMesh.transform.TransformPoint(navMesh.list[dragIndex]));
+                            statusText.text = "ggg";
                         }
                         else if (dragIndex >= 0)
                         {
+                            statusText.text = "eee";
                             navMesh.AddPoint(dragIndex);
+                            statusText.text = "ggg";
                         }
                         else
                         {
+                            statusText.text = "fff";
                             navMesh.AddPoint(touchPosition);
+                            statusText.text = "ggg";
                         }
+                        statusText.text = "ccc";
                         navMesh.CreateMesh();
                     }
                     else
@@ -118,6 +131,8 @@ public class CreateEnvironmentMap : MonoBehaviour
                         //     elevatorObject.transform.position = touchPosition;
                         // }
                     }
+                    statusText.text = "hhh";
+
                 }
             }
         }
@@ -127,9 +142,8 @@ public class CreateEnvironmentMap : MonoBehaviour
     {
         int count = navMesh.list.Count;
         List<Vector3> all = new List<Vector3>();
-        for (int i = 0; i < count; i++)
-            all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
-
+        for (int i = 0; i < count; i++) all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
+        
         return all.ToArray();
     }
 
@@ -174,33 +188,32 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     public void CreateMesh()
     {
-        statusText.text = "aaaa";
         mesh = new GameObject("mesh");
-        mesh.AddComponent<NavMeshObject>();
-        mesh.AddComponent<NavMeshManager>();
+        navMesh =  mesh.AddComponent<NavMeshObject>();
+        navManager = mesh.AddComponent<NavMeshManager>();
         statusText.enabled = true;
         particles.Clear();
-        statusText.text = "bbbb";
-        if (GameObject.FindGameObjectsWithTag("MapGameObject") == null){
+        if (GameObject.FindGameObjectsWithTag("MapGameObject") == null)
+        {
             navManager = Instantiate(mapInstantiate).GetComponent<NavMeshManager>();
-        } else {
+        }
+        else
+        {
             Destroy(GameObject.FindGameObjectWithTag("MapGameObject"));
             navManager = Instantiate(mapInstantiate).GetComponent<NavMeshManager>();
         }
         newNavMesh = new GameObject("New NavMesh");
-        statusText.text = "cccc";
         newNavMesh.transform.parent = navManager.transform;
         newNavMesh.AddComponent<NavMeshObject>();
         newNavMesh.AddComponent<NavMeshModifier>();
         newNavMesh.AddComponent<MeshFilter>();
         newNavMesh.AddComponent<MeshRenderer>();
         newNavMesh.tag = "mapNavMesh";
-        statusText.text = "dddd";
-        //navMesh = newNavMesh.GetComponent<NavMeshObject>();
+        
+        navMesh = newNavMesh.GetComponent<NavMeshObject>();
         MeshRenderer mRenderer = newNavMesh.GetComponent<MeshRenderer>();
         mRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         mRenderer.receiveShadows = false;
-        statusText.text = "eeee";
         if (navManager.meshMaterial)
         {
             navManager.meshMaterial.color = new Color(0.0f, 0.0f, 1.0f, 0.5f);

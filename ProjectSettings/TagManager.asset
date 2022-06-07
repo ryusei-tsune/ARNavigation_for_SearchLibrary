@@ -8,6 +8,7 @@ TagManager:
   - MapGameObject
   - mapNavMesh
   - Destination
+  - ARSessionOrigin
   layers:
   - Default
   - TransparentFX
