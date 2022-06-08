@@ -25,15 +25,19 @@ public class EM_Load : MonoBehaviour
     private List<GameObject> destinationList = new List<GameObject>();
     public void LoadButton()
     {
-        featurePath = Application.persistentDataPath + "/" + "test-Feature.ARMap";
-        objectPath = Application.persistentDataPath + "/" + "test-Object.json";
-        if (File.Exists(featurePath)) File.Delete(featurePath);
-        if (File.Exists(objectPath)) File.Delete(objectPath);
+        featurePath = Application.persistentDataPath + "/" + "Test-Feature.ARMap";
+        objectPath = Application.persistentDataPath + "/" + "Test-Object.json";
+        if (File.Exists(featurePath))
+        {
 #if UNITY_IOS
-        StartCoroutine(LoadFeature());
+            StartCoroutine(LoadFeature());
 #endif
-        ARMap = Instantiate(mapInstantiate);
-        LoadObject();
+        }
+        if (File.Exists(objectPath))
+        {
+            ARMap = Instantiate(mapInstantiate);
+            LoadObject();
+        }
     }
 
     private void LoadObject()
@@ -65,37 +69,47 @@ public class EM_Load : MonoBehaviour
 
             ]
         }*/
+        statusText.text = json;
         Root root = JsonUtility.FromJson<Root>(json);
+        statusText.text = "ttt";
         foreach (Map map in root.maps)
         {
+            statusText.text = "ddd";
             GameObject mapObject = new GameObject("New NavMesh");
             mapObject.transform.parent = ARMap.transform;
             mapObject.AddComponent<NavMeshModifier>();
             mapObject.AddComponent<NavMeshObject>();
             mapObject.AddComponent<MeshFilter>();
             mapObject.AddComponent<MeshRenderer>();
-            
+
+            statusText.text = "eee";
             mapObject.GetComponent<MeshRenderer>().material = mapMaterial;
             mapObject.GetComponent<MeshRenderer>().material.color = new Color(0.0f, 0.0f, 1.0f, 0.1f);
 
+            statusText.text = "fff";
             mapObject.transform.position = map.position;
             mapObject.transform.rotation = Quaternion.Euler(map.rotation);
             mapObject.transform.localScale = map.scale;
-            mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray(); 
+
+            statusText.text = "ggg";
+            mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray();
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
+            statusText.text = "hhh";
 
             mapList.Add(mapObject);
         }
-        foreach (Destination dest in root.destinations){
+        statusText.text = "bbb";
+        foreach (Destination dest in root.destinations)
+        {
             GameObject destObject = Instantiate(destination, dest.position, Quaternion.Euler(dest.rotation));
             destObject.transform.localScale = dest.scale;
-            for (int i=0; i < 7; i++){
+            for (int i = 0; i < 7; i++)
+            {
                 destObject.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text = dest.textData[i];
             }
             destinationList.Add(destObject);
         }
-
-
+        statusText.text = "ccc";
     }
 
 #if UNITY_IOS
@@ -135,7 +149,7 @@ public class EM_Load : MonoBehaviour
 
         if (worldMap.valid)
         {
-            statusText.text = "Deserialized successfully.";          
+            statusText.text = "Deserialized successfully.";
         }
         else
         {
@@ -143,7 +157,7 @@ public class EM_Load : MonoBehaviour
             yield break;
         }
         sessionSubsystem.ApplyWorldMap(worldMap);
-        
+
         file.Close();
         statusText.text = "Load";
         yield break;
