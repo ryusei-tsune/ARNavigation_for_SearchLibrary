@@ -13,39 +13,50 @@ using UnityEngine.XR.ARKit;
 #endif
 public class EM_Load : MonoBehaviour
 {
-    [SerializeField] ARSession m_ARSession;
+    [SerializeField] List<ARSession> m_ARSession = new List<ARSession>();
+    int sessionCount=0;
     [SerializeField] Text statusText;
     [SerializeField] GameObject mapInstantiate;
     [SerializeField] Material mapMaterial;
     [SerializeField] GameObject destination;
     private string featurePath;
+    private string featurePath2;
     private string objectPath;
+    private string objectPath2;
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
     private List<GameObject> destinationList = new List<GameObject>();
+    void Awake()
+    {
+         ARMap = Instantiate(mapInstantiate);
+    }
     public void LoadButton()
     {
         featurePath = Application.persistentDataPath + "/" + "Test-Feature.ARMap";
+        featurePath2 = Application.persistentDataPath + "/" + "Test2-Feature.ARMap";
         objectPath = Application.persistentDataPath + "/" + "Test-Object.json";
+        objectPath2 = Application.persistentDataPath + "/" + "Test2-Object.json";
         if (File.Exists(featurePath))
         {
 #if UNITY_IOS
-            StartCoroutine(LoadFeature());
+            StartCoroutine(LoadFeature(featurePath, objectPath));
 #endif
         }
-        if (File.Exists(objectPath))
+        if (File.Exists(featurePath2))
         {
-            ARMap = Instantiate(mapInstantiate);
-            LoadObject();
+#if UNITY_IOS
+            StartCoroutine(LoadFeature(featurePath2,objectPath2));
+#endif
         }
+
     }
 
-    private void LoadObject()
+    private void LoadObject(string path)
     {
         string json = "";
         try
         {
-            using (StreamReader sr = new StreamReader(objectPath))
+            using (StreamReader sr = new StreamReader(path))
             {
                 json = sr.ReadLine();
             }
@@ -69,12 +80,9 @@ public class EM_Load : MonoBehaviour
 
             ]
         }*/
-        statusText.text = json;
         Root root = JsonUtility.FromJson<Root>(json);
-        statusText.text = "ttt";
         foreach (Map map in root.maps)
         {
-            statusText.text = "ddd";
             GameObject mapObject = new GameObject("New NavMesh");
             mapObject.transform.parent = ARMap.transform;
             mapObject.AddComponent<NavMeshModifier>();
@@ -82,23 +90,18 @@ public class EM_Load : MonoBehaviour
             mapObject.AddComponent<MeshFilter>();
             mapObject.AddComponent<MeshRenderer>();
 
-            statusText.text = "eee";
             mapObject.GetComponent<MeshRenderer>().material = mapMaterial;
             mapObject.GetComponent<MeshRenderer>().material.color = new Color(0.0f, 0.0f, 1.0f, 0.1f);
 
-            statusText.text = "fff";
             mapObject.transform.position = map.position;
             mapObject.transform.rotation = Quaternion.Euler(map.rotation);
             mapObject.transform.localScale = map.scale;
 
-            statusText.text = "ggg";
             mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray();
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
-            statusText.text = "hhh";
 
             mapList.Add(mapObject);
         }
-        statusText.text = "bbb";
         foreach (Destination dest in root.destinations)
         {
             GameObject destObject = Instantiate(destination, dest.position, Quaternion.Euler(dest.rotation));
@@ -109,19 +112,18 @@ public class EM_Load : MonoBehaviour
             }
             destinationList.Add(destObject);
         }
-        statusText.text = "ccc";
     }
 
 #if UNITY_IOS
-    IEnumerator LoadFeature()
+    IEnumerator LoadFeature(string feature, string obje)
     {
-        var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
+        var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession[sessionCount++].subsystem;
         if (sessionSubsystem == null)
         {
             yield break;
         }
 
-        var file = File.Open(featurePath, FileMode.Open);
+        var file = File.Open(feature, FileMode.Open);
         if (file == null)
         {
             yield break;
@@ -142,7 +144,7 @@ public class EM_Load : MonoBehaviour
         var data = new NativeArray<byte>(allBytes.Count, Allocator.Temp);
         data.CopyFrom(allBytes.ToArray());
 
-        Debug.Log(string.Format("Deserializing to ARWorldMap...", featurePath));
+        Debug.Log(string.Format("Deserializing to ARWorldMap...", feature));
 
         if (ARWorldMap.TryDeserialize(data, out ARWorldMap worldMap))
             data.Dispose();
@@ -160,7 +162,11 @@ public class EM_Load : MonoBehaviour
 
         file.Close();
         statusText.text = "Load";
-        yield break;
+
+        if (File.Exists(obje))
+        {
+            LoadObject(obje);
+        }
     }
 #endif
 }

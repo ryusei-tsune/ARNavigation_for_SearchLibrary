@@ -20,6 +20,7 @@ public class EM_Save : MonoBehaviour
     [SerializeField] Button saveButton;
     string featurePath;
     string objectPath;
+    string sessionPath;
     // List<ARSession> ARsessions;
 
     public void SaveButton()
@@ -34,9 +35,10 @@ public class EM_Save : MonoBehaviour
         {
             inputField.placeholder.GetComponent<Text>().color = Color.grey;
             inputField.placeholder.GetComponent<Text>().text = "Filename";
-            
+
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
+            sessionPath = Application.persistentDataPath + "/" + inputField.text + "-session.txt";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -87,7 +89,7 @@ public class EM_Save : MonoBehaviour
                 int[] triangles = mapMeshFilter.triangles;
                 for (int j = 0; j < triangles.Length; j++)
                 {
-                    map.meshTriangles.Add(triangles[i]);
+                    map.meshTriangles.Add(triangles[j]);
                 }
 
                 root.maps.Add(map);
@@ -128,6 +130,7 @@ public class EM_Save : MonoBehaviour
 #if UNITY_IOS
     IEnumerator SaveFeature()
     {
+        statusText.text = m_ARSession.descriptor.id.ToString();
         var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
         if (sessionSubsystem == null)
         {
@@ -150,15 +153,23 @@ public class EM_Save : MonoBehaviour
     }
     void SaveAndDisposeWorldMap(ARWorldMap worldMap)
     {
+        statusText.text = worldMap.valid.GetHashCode().ToString();
         var data = worldMap.Serialize(Allocator.Temp);
+        try {
+            using(StreamWriter sw = new StreamWriter(sessionPath, false, Encoding.GetEncoding("utf-8"))){
+                sw.WriteLine(data.ToString());
+            }
+        } 
+        catch (Exception e){
+            statusText.text = e.ToString();
+        } 
         var file = File.Open(featurePath, FileMode.Create);
-
         var writer = new BinaryWriter(file);
         writer.Write(data.ToArray());
         writer.Close();
         data.Dispose();
         worldMap.Dispose();
-        statusText.text = "Save";          //確認用
+        // statusText.text = "Save";          //確認用
     }
 #endif
 }

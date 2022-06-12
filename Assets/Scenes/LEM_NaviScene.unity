@@ -292,10 +292,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 15
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 2
+    m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -328,8 +328,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 500}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 0, y: 300}
+  m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &334864342
 GameObject:
@@ -843,7 +843,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a39f8ba159104459bd80e206dc4d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ARSession: {fileID: 1808778494}
+  m_ARSession:
+  - {fileID: 1808778494}
+  - {fileID: 1808778494}
+  - {fileID: 1808778494}
   statusText: {fileID: 259835588}
   mapInstantiate: {fileID: 1973013469408044, guid: 4d7a827933320dd4eaa8669cbcf09716, type: 3}
   mapMaterial: {fileID: 2100000, guid: 4b8832253018b9a47baaf150372e4c58, type: 2}
