@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using NavMeshExtension;
 public class CreateEnvironmentMap : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     List<GameObject> particles = new List<GameObject>();
     [SerializeField] Vector3[] allPoints;
     private List<int> selected = new List<int>(); // 必要ないかも
-    private static Vector3 yValue;
+    private static Vector3 yValue= Vector3.zero;
     private static bool placing = false;
     private static bool landmark = false;
 
@@ -31,8 +31,8 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     [SerializeField] GameObject elevator;
 
-    [SerializeField] GameObject landMark; // 目的地となる物体
-    private List<GameObject> landMarkLists = new List<GameObject>(); // 目的地の情報を全て保持
+    [SerializeField] GameObject destination; // 目的地となる物体
+    private List<GameObject> destinationLists = new List<GameObject>(); // 目的地の情報を全て保持
     private int landMarkSelect = -1;
     // [SerializeField] GameObject upStair; // 階層移動地点
     // private List<GameObject> upStairs = new List<GameObject>(); // 目的地の情報を全て保持
@@ -45,8 +45,8 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     private void Start()
     {
-        statusText.enabled = false;
-        raycastManager = GetComponent<ARRaycastManager>();
+        raycastManager = GameObject.FindGameObjectWithTag("ARSessionOrigin").GetComponent<ARRaycastManager>();
+        CreateMesh();
     }
     private void Update()
     {
@@ -61,6 +61,7 @@ public class CreateEnvironmentMap : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
             {
+               
                 return;
             }
             else
@@ -77,9 +78,12 @@ public class CreateEnvironmentMap : MonoBehaviour
                     {
                         touchPosition.y = yValue.y;
                     }
+
                     // navMeshに登録されている点を配列で取得
                     allPoints = ConvertAllPoints();
+
                     int dragIndex = FindClosest(touch);
+
                     if (placing)
                     {
                         particles.Add(Instantiate(particle));
@@ -101,18 +105,21 @@ public class CreateEnvironmentMap : MonoBehaviour
                     }
                     else
                     {
+                        statusText.text = landmark.ToString();
                         if (landmark)
                         {
                             if (landMarkSelect != -1)
                             {
+                                statusText.text = "bbbb";
                                 // 目的地の物体を移動
-                                landMarkLists[landMarkSelect].transform.position = touchPosition;
+                                destinationLists[landMarkSelect].transform.position = touchPosition;
                             }
                             else
                             {
+                                statusText.text = "aaaa";
                                 // 新規で目的地の物体を作成
-                                landMarkLists.Add(Instantiate(landMark, touchPosition, Quaternion.identity));
-                                landMarkSelect = landMarkLists.Count - 1;
+                                destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
+                                landMarkSelect = destinationLists.Count - 1;
                             }
                         }//  else {
                         //     elevatorObject.transform.position = touchPosition;
@@ -127,9 +134,8 @@ public class CreateEnvironmentMap : MonoBehaviour
     {
         int count = navMesh.list.Count;
         List<Vector3> all = new List<Vector3>();
-        for (int i = 0; i < count; i++)
-            all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
-
+        for (int i = 0; i < count; i++) all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
+        
         return all.ToArray();
     }
 
@@ -175,20 +181,27 @@ public class CreateEnvironmentMap : MonoBehaviour
     public void CreateMesh()
     {
         mesh = new GameObject("mesh");
-        mesh.AddComponent<NavMeshObject>();
-        mesh.AddComponent<NavMeshManager>();
+        navMesh =  mesh.AddComponent<NavMeshObject>();
+        navManager = mesh.AddComponent<NavMeshManager>();
         statusText.enabled = true;
         particles.Clear();
-        navManager = (GameObject.FindGameObjectsWithTag("MapGameObject") == null) ? Instantiate(mapInstantiate).GetComponent<NavMeshManager>() : GameObject.FindGameObjectWithTag("MapGameObject").GetComponent<NavMeshManager>();
+        if (GameObject.FindGameObjectsWithTag("MapGameObject") == null)
+        {
+            navManager = Instantiate(mapInstantiate).GetComponent<NavMeshManager>();
+        }
+        else
+        {
+            Destroy(GameObject.FindGameObjectWithTag("MapGameObject"));
+            navManager = Instantiate(mapInstantiate).GetComponent<NavMeshManager>();
+        }
         newNavMesh = new GameObject("New NavMesh");
-
         newNavMesh.transform.parent = navManager.transform;
         newNavMesh.AddComponent<NavMeshObject>();
         newNavMesh.AddComponent<NavMeshModifier>();
         newNavMesh.AddComponent<MeshFilter>();
         newNavMesh.AddComponent<MeshRenderer>();
         newNavMesh.tag = "mapNavMesh";
-
+        
         navMesh = newNavMesh.GetComponent<NavMeshObject>();
         MeshRenderer mRenderer = newNavMesh.GetComponent<MeshRenderer>();
         mRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -204,9 +217,10 @@ public class CreateEnvironmentMap : MonoBehaviour
             mRenderer.enabled = false;
         }
     }
-    public void mapButton()
+    public void MapButton()
     {
         landmark = false;
+        landMarkSelect = -1;
         // PTタグを付与した選択地点のパーティクルを検出
         if (!placing)
         {
@@ -216,25 +230,27 @@ public class CreateEnvironmentMap : MonoBehaviour
         }
         else
         {
-            confirmMap();
+            ConfirmMap();
         }
     }
 
-    public void landMarkButton()
+    public void LandMarkButton()
     {
         placing = false;
-        confirmMap();
-        if (!landmark)
-        {
-            landmark = true;
-        }
-        else
-        {
-            landmark = false;
-        }
+        ConfirmMap();
+        // if (!landmark)
+        // {
+        //     landmark = true;
+        // }
+        // else
+        // {
+        //     landmark = false;
+        // }
+        landmark = true;
+        statusText.text = "landmark";
     }
     // 指定した歩行可能領域の確定
-    private void confirmMap()
+    private void ConfirmMap()
     {
         GameObject[] particleList = GameObject.FindGameObjectsWithTag("PT");
         foreach (var item in particleList)
