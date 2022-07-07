@@ -613,7 +613,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: Load
 --- !u!222 &714368972
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -843,10 +843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a39f8ba159104459bd80e206dc4d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ARSession:
-  - {fileID: 1808778494}
-  - {fileID: 1808778494}
-  - {fileID: 1808778494}
+  m_ARSession: {fileID: 1808778494}
   statusText: {fileID: 259835588}
   mapInstantiate: {fileID: 1973013469408044, guid: 4d7a827933320dd4eaa8669cbcf09716, type: 3}
   mapMaterial: {fileID: 2100000, guid: 4b8832253018b9a47baaf150372e4c58, type: 2}

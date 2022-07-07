@@ -187,20 +187,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 223974229}
-        m_TargetAssemblyTypeName: EM_FileIO, Assembly-CSharp
+        m_TargetAssemblyTypeName: EM_Save, Assembly-CSharp
         m_MethodName: SaveButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 125716015}
-        m_TargetAssemblyTypeName: DetectARMarker, Assembly-CSharp
-        m_MethodName: PositionSave
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -340,7 +328,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 125716011}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b3edf7a6d2849f1479a0c318570eafe9, type: 3}
   m_Name: 
@@ -776,18 +764,6 @@ MonoBehaviour:
       - m_Target: {fileID: 223974227}
         m_TargetAssemblyTypeName: CreateEnvironmentMap, Assembly-CSharp
         m_MethodName: LandMarkButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 125716015}
-        m_TargetAssemblyTypeName: DetectARMarker, Assembly-CSharp
-        m_MethodName: PositionSave
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1367,18 +1343,6 @@ MonoBehaviour:
       - m_Target: {fileID: 223974227}
         m_TargetAssemblyTypeName: CreateEnvironmentMap, Assembly-CSharp
         m_MethodName: MapButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 125716015}
-        m_TargetAssemblyTypeName: DetectARMarker, Assembly-CSharp
-        m_MethodName: PositionSave
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

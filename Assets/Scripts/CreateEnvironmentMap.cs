@@ -110,13 +110,11 @@ public class CreateEnvironmentMap : MonoBehaviour
                         {
                             if (landMarkSelect != -1)
                             {
-                                statusText.text = "bbbb";
                                 // 目的地の物体を移動
                                 destinationLists[landMarkSelect].transform.position = touchPosition;
                             }
                             else
                             {
-                                statusText.text = "aaaa";
                                 // 新規で目的地の物体を作成
                                 destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
                                 landMarkSelect = destinationLists.Count - 1;

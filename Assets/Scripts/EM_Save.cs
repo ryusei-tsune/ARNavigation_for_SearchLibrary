@@ -20,8 +20,7 @@ public class EM_Save : MonoBehaviour
     [SerializeField] Button saveButton;
     string featurePath;
     string objectPath;
-    string sessionPath;
-    // List<ARSession> ARsessions;
+    string markerPath;
 
     public void SaveButton()
     {
@@ -38,7 +37,7 @@ public class EM_Save : MonoBehaviour
 
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
-            sessionPath = Application.persistentDataPath + "/" + inputField.text + "-session.txt";
+            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.txt";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -121,6 +120,15 @@ public class EM_Save : MonoBehaviour
                 string json = JsonUtility.ToJson(root);
                 sw.WriteLine(json);
             }
+
+            using (StreamWriter sw = new StreamWriter(markerPath, true, Encoding.GetEncoding("utf-8")))
+            {
+                foreach (var marker in DetectARMarker.markerPosList)
+                {
+                    string json = marker.Key + ": (" + marker.Value.x + ", " + marker.Value.y + ", " + marker.Value.z + ")";
+                    sw.WriteLine(json);
+                }
+            }
         }
         catch (Exception e)
         {
@@ -155,14 +163,6 @@ public class EM_Save : MonoBehaviour
     {
         statusText.text = worldMap.valid.GetHashCode().ToString();
         var data = worldMap.Serialize(Allocator.Temp);
-        try {
-            using(StreamWriter sw = new StreamWriter(sessionPath, false, Encoding.GetEncoding("utf-8"))){
-                sw.WriteLine(data.ToString());
-            }
-        } 
-        catch (Exception e){
-            statusText.text = e.ToString();
-        } 
         var file = File.Open(featurePath, FileMode.Create);
         var writer = new BinaryWriter(file);
         writer.Write(data.ToArray());
