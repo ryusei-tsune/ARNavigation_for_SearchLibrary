@@ -35,8 +35,6 @@ public class DetectARMarker : MonoBehaviour
 
     void Awake()
     {
-        // marker = new bool[2];
-        // marker = Enumerable.Repeat<bool>(false, 2).ToArray();
         markerPosList = new Dictionary<string, Vector3>();
         statusText.enabled = false;
         m_TrackedImageManager = GetComponent<ARTrackedImageManager>();

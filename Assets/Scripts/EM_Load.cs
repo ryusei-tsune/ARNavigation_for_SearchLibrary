@@ -66,7 +66,6 @@ public class EM_Load : MonoBehaviour
             ]
         }*/
         Root root = JsonUtility.FromJson<Root>(json);
-        int n=0, m=0;
         foreach (Map map in root.maps)
         {
             GameObject mapObject =  new GameObject("New NavMesh");
@@ -87,7 +86,6 @@ public class EM_Load : MonoBehaviour
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
 
             mapList.Add(mapObject);
-            n++;
         }
         foreach (Destination dest in root.destinations)
         {
@@ -98,9 +96,7 @@ public class EM_Load : MonoBehaviour
                 destObject.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text = dest.textData[i];
             }
             destinationList.Add(destObject);
-            m++;
         }
-        statusText.text = n.ToString() + " & " + m.ToString();
     }
 
 #if UNITY_IOS
