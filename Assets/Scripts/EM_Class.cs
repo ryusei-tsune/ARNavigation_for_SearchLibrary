@@ -21,3 +21,13 @@ public class Destination {
     public Vector3 scale;
     public string[] textData;
 }
+
+public class Marker {
+    public int id;
+    Vector3 position;
+
+    public Marker(int n, Vector3 pos){
+        id = n;
+        position = pos;
+    }
+}

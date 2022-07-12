@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -30,12 +28,11 @@ public class DetectARMarker : MonoBehaviour
     [SerializeField] Text statusText;              //状態をテキストで表示
 
     ARTrackedImageManager m_TrackedImageManager;        //画像追跡を行うクラス
-    public static Dictionary<string, Vector3> markerPosList;
+    public static List<Marker> markerPosList = new List<Marker>();
     bool[] marker = { false, false, false, false}; // マーカの個数分
 
     void Awake()
     {
-        markerPosList = new Dictionary<string, Vector3>();
         statusText.enabled = false;
         m_TrackedImageManager = GetComponent<ARTrackedImageManager>();
     }
@@ -60,9 +57,7 @@ public class DetectARMarker : MonoBehaviour
             string markerName = trackedImage.referenceImage.name;
             int num = int.Parse(Regex.Replace(markerName, @"[^0-9]", ""));
 
-            Vector3 tempPos = trackedImage.transform.position;
-            Vector3 tempMarkerPos = trackedImage.transform.TransformPoint(tempPos.x, tempPos.y, tempPos.z);
-            statusText.text = "x: " + tempMarkerPos.x + "\ny: " + tempMarkerPos.y + "\nz: " + tempMarkerPos.z;
+
             if (!marker[num])
             {
                 statusText.text = "Recognize Image";
@@ -71,7 +66,8 @@ public class DetectARMarker : MonoBehaviour
                 //認識した画像の名前を文字列に
                 try
                 {
-                    markerPosList.Add(num.ToString(), markerPos);
+                    Marker marker = new Marker(num, markerPos);
+                    markerPosList.Add(marker);
                     statusText.text = "x: " + markerPos.x + "\ny: " + markerPos.y + "\nz: " + markerPos.z;
                 }
                 catch (Exception e)

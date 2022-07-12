@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Unity.Collections;
 using UnityEngine.UI;
@@ -37,7 +38,7 @@ public class EM_Save : MonoBehaviour
 
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
-            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.txt";
+            markerPath = Application.persistentDataPath + "/" + inputField.text + "MarkerPos.txt";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -112,22 +113,24 @@ public class EM_Save : MonoBehaviour
             }
             root.destinations.Add(destination);
         }
-
+        string json;
         try
         {
             using (StreamWriter sw = new StreamWriter(objectPath, false, Encoding.GetEncoding("utf-8")))
             {
-                string json = JsonUtility.ToJson(root);
+                json = JsonUtility.ToJson(root);
                 sw.WriteLine(json);
             }
 
             using (StreamWriter sw = new StreamWriter(markerPath, true, Encoding.GetEncoding("utf-8")))
             {
+                List<string> jsonList = new List<string>();
                 foreach (var marker in DetectARMarker.markerPosList)
                 {
-                    string json = marker.Key + ": (" + marker.Value.x + ", " + marker.Value.y + ", " + marker.Value.z + ")";
-                    sw.WriteLine(json);
+                    jsonList.Add(JsonUtility.ToJson(marker));
                 }
+                json = "{ 0: [" + string.Join(", ", jsonList) + "]}";
+                sw.WriteLine(json);
             }
         }
         catch (Exception e)
@@ -138,7 +141,6 @@ public class EM_Save : MonoBehaviour
 #if UNITY_IOS
     IEnumerator SaveFeature()
     {
-        statusText.text = m_ARSession.descriptor.id.ToString();
         var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
         if (sessionSubsystem == null)
         {
@@ -161,7 +163,6 @@ public class EM_Save : MonoBehaviour
     }
     void SaveAndDisposeWorldMap(ARWorldMap worldMap)
     {
-        statusText.text = worldMap.valid.GetHashCode().ToString();
         var data = worldMap.Serialize(Allocator.Temp);
         var file = File.Open(featurePath, FileMode.Create);
         var writer = new BinaryWriter(file);
@@ -169,7 +170,7 @@ public class EM_Save : MonoBehaviour
         writer.Close();
         data.Dispose();
         worldMap.Dispose();
-        // statusText.text = "Save";          //確認用
+        statusText.text = "Save";          //確認用
     }
 #endif
 }
