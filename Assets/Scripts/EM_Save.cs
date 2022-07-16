@@ -38,7 +38,7 @@ public class EM_Save : MonoBehaviour
 
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
-            markerPath = Application.persistentDataPath + "/" + inputField.text + "MarkerPos.txt";
+            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -129,7 +129,7 @@ public class EM_Save : MonoBehaviour
                 {
                     jsonList.Add(JsonUtility.ToJson(marker));
                 }
-                json = "{ 0: [" + string.Join(", ", jsonList) + "]}";
+                json = "{ \"0\" : [" + string.Join(", ", jsonList) + "]}";
                 sw.WriteLine(json);
             }
         }

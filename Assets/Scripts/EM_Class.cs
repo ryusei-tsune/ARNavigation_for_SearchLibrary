@@ -24,7 +24,7 @@ public class Destination {
 
 public class Marker {
     public int id;
-    Vector3 position;
+    public Vector3 position;
 
     public Marker(int n, Vector3 pos){
         id = n;
