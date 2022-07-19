@@ -106,8 +106,9 @@ public class EM_Save : MonoBehaviour
             destination.position = dest.transform.position;
             destination.rotation = dest.transform.rotation.eulerAngles;
             destination.scale = dest.transform.localScale;
-            destination.textData = new string[7];
-            for (int i = 0; i < 7; i++)
+            destination.textData = new string[8];
+            destination.textData[0] = dest.GetComponent<TextMesh>().text;
+            for (int i = 1; i < 8; i++)
             {
                 destination.textData[i] = dest.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text;
             }

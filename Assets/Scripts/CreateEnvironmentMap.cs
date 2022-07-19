@@ -34,6 +34,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     [SerializeField] GameObject destination; // 目的地となる物体
     private List<GameObject> destinationLists = new List<GameObject>(); // 目的地の情報を全て保持
     private int landMarkSelect = -1;
+    [SerializeField] InputField bookName;
     // [SerializeField] GameObject upStair; // 階層移動地点
     // private List<GameObject> upStairs = new List<GameObject>(); // 目的地の情報を全て保持
     // private int upStairSelect = -1;
@@ -105,7 +106,6 @@ public class CreateEnvironmentMap : MonoBehaviour
                     }
                     else
                     {
-                        statusText.text = landmark.ToString();
                         if (landmark)
                         {
                             if (landMarkSelect != -1)
@@ -217,9 +217,9 @@ public class CreateEnvironmentMap : MonoBehaviour
     }
     public void MapButton()
     {
+        destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
         landmark = false;
         landMarkSelect = -1;
-        // PTタグを付与した選択地点のパーティクルを検出
         if (!placing)
         {
             GameObject newObj = newNavMesh.GetComponent<NavMeshObject>().CreateSubMesh();
