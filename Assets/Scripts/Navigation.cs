@@ -7,10 +7,14 @@ public class Navigation : MonoBehaviour
     [SerializeField] Text statusText;
     [SerializeField] InputField searchedKey;
     [SerializeField] LineRenderer line = null;
+    private GameObject agent;
 
+    private void Start() {
+        agent = GameObject.FindWithTag("MainCamera");
+        agent.GetComponent<LineRenderer>().enabled = false;
+    }
     public void NavigationButton()
     {
-        GameObject agent = GameObject.FindWithTag("MainCamera");
         GameObject[] targets = GameObject.FindGameObjectsWithTag("Destination");
 
         if (targets.Length != 0)
