@@ -686,7 +686,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1246696491}
         m_TargetAssemblyTypeName: Scene_Manager, Assembly-CSharp
-        m_MethodName: OnClickAdmin
+        m_MethodName: OnClickUser
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

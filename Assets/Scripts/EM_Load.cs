@@ -22,7 +22,6 @@ public class EM_Load : MonoBehaviour
     private string objectPath;
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
-    private List<GameObject> destinationList = new List<GameObject>();
     void Awake()
     {
         ARMap = Instantiate(mapInstantiate);
@@ -68,7 +67,7 @@ public class EM_Load : MonoBehaviour
         Root root = JsonUtility.FromJson<Root>(json);
         foreach (Map map in root.maps)
         {
-            GameObject mapObject =  new GameObject("New NavMesh");
+            GameObject mapObject = new GameObject("New NavMesh");
             mapObject.transform.parent = ARMap.transform;
             mapObject.AddComponent<NavMeshModifier>();
             mapObject.AddComponent<NavMeshObject>();
@@ -82,20 +81,22 @@ public class EM_Load : MonoBehaviour
             mapObject.transform.rotation = Quaternion.Euler(map.rotation);
             mapObject.transform.localScale = map.scale;
 
+            mapList.Add(mapObject);
             mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray();
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
 
-            mapList.Add(mapObject);
         }
         foreach (Destination dest in root.destinations)
         {
             GameObject destObject = Instantiate(destination, dest.position, Quaternion.Euler(dest.rotation));
             destObject.transform.localScale = dest.scale;
-            for (int i = 0; i < 7; i++)
+            destObject.GetComponent<TextMesh>().text = dest.textData[0];
+            for (int i = 1; i < 8; i++)
             {
-                destObject.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text = dest.textData[i];
+                destObject.transform.GetChild(i - 1).gameObject.GetComponent<TextMesh>().text = dest.textData[i];
             }
-            destinationList.Add(destObject);
+            destObject.SetActive(false);
+            CommonVariables.destinationList.Add(destObject);
         }
     }
 
@@ -154,4 +155,15 @@ public class EM_Load : MonoBehaviour
         }
     }
 #endif
+    private void Update()
+    {
+#if UNITY_IOS
+        var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
+#else
+        XRSessionSubsystem sessionSubsystem = null;
+#endif
+        if (sessionSubsystem == null)
+            return;
+
+    }
 }

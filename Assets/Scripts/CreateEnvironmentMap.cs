@@ -21,7 +21,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     List<GameObject> particles = new List<GameObject>();
     [SerializeField] Vector3[] allPoints;
     private List<int> selected = new List<int>(); // 必要ないかも
-    private static Vector3 yValue= Vector3.zero;
+    private static Vector3 yValue = Vector3.zero;
     private static bool placing = false;
     private static bool landmark = false;
 
@@ -62,7 +62,6 @@ public class CreateEnvironmentMap : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
             {
-               
                 return;
             }
             else
@@ -133,7 +132,7 @@ public class CreateEnvironmentMap : MonoBehaviour
         int count = navMesh.list.Count;
         List<Vector3> all = new List<Vector3>();
         for (int i = 0; i < count; i++) all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
-        
+
         return all.ToArray();
     }
 
@@ -179,7 +178,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     public void CreateMesh()
     {
         mesh = new GameObject("mesh");
-        navMesh =  mesh.AddComponent<NavMeshObject>();
+        navMesh = mesh.AddComponent<NavMeshObject>();
         navManager = mesh.AddComponent<NavMeshManager>();
         statusText.enabled = true;
         particles.Clear();
@@ -199,7 +198,7 @@ public class CreateEnvironmentMap : MonoBehaviour
         newNavMesh.AddComponent<MeshFilter>();
         newNavMesh.AddComponent<MeshRenderer>();
         newNavMesh.tag = "mapNavMesh";
-        
+
         navMesh = newNavMesh.GetComponent<NavMeshObject>();
         MeshRenderer mRenderer = newNavMesh.GetComponent<MeshRenderer>();
         mRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -217,7 +216,11 @@ public class CreateEnvironmentMap : MonoBehaviour
     }
     public void MapButton()
     {
-        destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
+        if (landMarkSelect != -1)
+        {
+            destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
+            bookName.text = "";
+        }
         landmark = false;
         landMarkSelect = -1;
         if (!placing)

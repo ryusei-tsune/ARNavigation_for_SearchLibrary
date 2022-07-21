@@ -110,7 +110,7 @@ public class EM_Save : MonoBehaviour
             destination.textData[0] = dest.GetComponent<TextMesh>().text;
             for (int i = 1; i < 8; i++)
             {
-                destination.textData[i] = dest.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text;
+                destination.textData[i] = dest.transform.GetChild(i-1).gameObject.GetComponent<TextMesh>().text;
             }
             root.destinations.Add(destination);
         }

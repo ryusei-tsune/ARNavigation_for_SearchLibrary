@@ -6,50 +6,52 @@ public class Navigation : MonoBehaviour
 {
     [SerializeField] Text statusText;
     [SerializeField] InputField searchedKey;
-    [SerializeField] LineRenderer line = null;
+    private LineRenderer line = null;
     private GameObject agent;
+    private GameObject[] maps;
+    private NavMeshAgent navAgent;
+    private NavMeshPath path;
 
-    private void Start() {
+    private void Start()
+    {
         agent = GameObject.FindWithTag("MainCamera");
-        agent.GetComponent<LineRenderer>().enabled = false;
+        line = agent.GetComponent<LineRenderer>();
+        line.enabled = false;
     }
     public void NavigationButton()
     {
-        GameObject[] targets = GameObject.FindGameObjectsWithTag("Destination");
-
-        if (targets.Length != 0)
+        if (CommonVariables.destinationList.Count > 0)
         {
-            GameObject[] maps = GameObject.FindGameObjectsWithTag("MapGameObject");
+            maps = GameObject.FindGameObjectsWithTag("MapGameObject");
             foreach (GameObject map in maps)
             {
                 map.GetComponent<NavMeshSurface>().BuildNavMesh();
             }
             agent.AddComponent<NavMeshAgent>();
-            agent.GetComponent<LineRenderer>().enabled = true;
-            NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
-
+            line.enabled = true;
+            navAgent = agent.GetComponent<NavMeshAgent>();
+            
             GameObject dest = null;
             string keyword = searchedKey.text;
-            foreach (GameObject target in targets)
-            {
+            foreach(GameObject target in CommonVariables.destinationList){
                 if (target.GetComponent<TextMesh>().text.Contains(keyword))
                 {
                     dest = target;
                 }
             }
-            navAgent.radius = 0.2f;
+            navAgent.radius = 0.1f;
             if (dest != null)
             {
                 navAgent.SetDestination(dest.transform.position);
                 navAgent.speed = 0.0f;
 
-                NavMeshPath path = new NavMeshPath();
+                path = new NavMeshPath();
                 navAgent.CalculatePath(dest.transform.position, path);
 
                 line.positionCount = path.corners.Length;
                 line.SetPositions(path.corners);
 
-                statusText.text = keyword;
+                statusText.text = "corners: " + path.corners.Length.ToString();
             }
             else
             {
