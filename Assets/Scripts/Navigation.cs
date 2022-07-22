@@ -51,7 +51,7 @@ public class Navigation : MonoBehaviour
                 line.positionCount = path.corners.Length;
                 line.SetPositions(path.corners);
 
-                statusText.text = "corners: " + path.corners.Length.ToString();
+                statusText.text = "キーワード: " + keyword;
             }
             else
             {
