@@ -20,8 +20,7 @@ public class EM_Save : MonoBehaviour
     [SerializeField] Button saveButton;
     string featurePath;
     string objectPath;
-    string sessionPath;
-    // List<ARSession> ARsessions;
+    string markerPath;
 
     public void SaveButton()
     {
@@ -38,7 +37,7 @@ public class EM_Save : MonoBehaviour
 
             featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
             objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
-            sessionPath = Application.persistentDataPath + "/" + inputField.text + "-session.txt";
+            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -106,19 +105,31 @@ public class EM_Save : MonoBehaviour
             destination.position = dest.transform.position;
             destination.rotation = dest.transform.rotation.eulerAngles;
             destination.scale = dest.transform.localScale;
-            destination.textData = new string[7];
-            for (int i = 0; i < 7; i++)
+            destination.textData = new string[8];
+            destination.textData[0] = dest.GetComponent<TextMesh>().text;
+            for (int i = 1; i < 8; i++)
             {
-                destination.textData[i] = dest.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text;
+                destination.textData[i] = dest.transform.GetChild(i-1).gameObject.GetComponent<TextMesh>().text;
             }
             root.destinations.Add(destination);
         }
-
+        string json;
         try
         {
             using (StreamWriter sw = new StreamWriter(objectPath, false, Encoding.GetEncoding("utf-8")))
             {
-                string json = JsonUtility.ToJson(root);
+                json = JsonUtility.ToJson(root);
+                sw.WriteLine(json);
+            }
+
+            using (StreamWriter sw = new StreamWriter(markerPath, true, Encoding.GetEncoding("utf-8")))
+            {
+                List<string> jsonList = new List<string>();
+                foreach (var marker in DetectARMarker.markerPosList)
+                {
+                    jsonList.Add(JsonUtility.ToJson(marker));
+                }
+                json = "{ \"0\" : [" + string.Join(", ", jsonList) + "]}";
                 sw.WriteLine(json);
             }
         }
@@ -130,7 +141,6 @@ public class EM_Save : MonoBehaviour
 #if UNITY_IOS
     IEnumerator SaveFeature()
     {
-        statusText.text = m_ARSession.descriptor.id.ToString();
         var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
         if (sessionSubsystem == null)
         {
@@ -153,23 +163,14 @@ public class EM_Save : MonoBehaviour
     }
     void SaveAndDisposeWorldMap(ARWorldMap worldMap)
     {
-        statusText.text = worldMap.valid.GetHashCode().ToString();
         var data = worldMap.Serialize(Allocator.Temp);
-        try {
-            using(StreamWriter sw = new StreamWriter(sessionPath, false, Encoding.GetEncoding("utf-8"))){
-                sw.WriteLine(data.ToString());
-            }
-        } 
-        catch (Exception e){
-            statusText.text = e.ToString();
-        } 
         var file = File.Open(featurePath, FileMode.Create);
         var writer = new BinaryWriter(file);
         writer.Write(data.ToArray());
         writer.Close();
         data.Dispose();
         worldMap.Dispose();
-        // statusText.text = "Save";          //確認用
+        statusText.text = "Save";          //確認用
     }
 #endif
 }

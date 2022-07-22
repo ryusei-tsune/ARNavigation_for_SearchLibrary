@@ -3,15 +3,22 @@ using UnityEngine.SceneManagement;
 
 public class Scene_Manager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private int Sceneflag = 0;
 
-    public void changeScene()
+    public void OnClickAdmin()
     {
-        if (Sceneflag == 0)
-        {
-            SceneManager.LoadScene("LEM_NaviScene", LoadSceneMode.Single);
-            Sceneflag = 1;
-        }
+        SceneManager.LoadScene("CEM_DMScene", LoadSceneMode.Single);
+
     }
+
+    public void OnClickUser()
+    {
+        SceneManager.LoadScene("LEM_NaviScene", LoadSceneMode.Single);
+
+    }
+
+    public void OnClickReturn()
+    {
+        SceneManager.LoadScene("TitleScene", LoadSceneMode.Single);
+    }
+
 }

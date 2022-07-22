@@ -13,42 +13,29 @@ using UnityEngine.XR.ARKit;
 #endif
 public class EM_Load : MonoBehaviour
 {
-    [SerializeField] List<ARSession> m_ARSession = new List<ARSession>();
-    int sessionCount=0;
+    [SerializeField] ARSession m_ARSession;
     [SerializeField] Text statusText;
     [SerializeField] GameObject mapInstantiate;
     [SerializeField] Material mapMaterial;
     [SerializeField] GameObject destination;
     private string featurePath;
-    private string featurePath2;
     private string objectPath;
-    private string objectPath2;
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
-    private List<GameObject> destinationList = new List<GameObject>();
     void Awake()
     {
-         ARMap = Instantiate(mapInstantiate);
+        ARMap = Instantiate(mapInstantiate);
     }
     public void LoadButton()
     {
-        featurePath = Application.persistentDataPath + "/" + "Test-Feature.ARMap";
-        featurePath2 = Application.persistentDataPath + "/" + "Test2-Feature.ARMap";
-        objectPath = Application.persistentDataPath + "/" + "Test-Object.json";
-        objectPath2 = Application.persistentDataPath + "/" + "Test2-Object.json";
+        featurePath = Application.persistentDataPath + "/" + "Test1-Feature.ARMap";
+        objectPath = Application.persistentDataPath + "/" + "Test1-Object.json";
         if (File.Exists(featurePath))
         {
 #if UNITY_IOS
             StartCoroutine(LoadFeature(featurePath, objectPath));
 #endif
         }
-        if (File.Exists(featurePath2))
-        {
-#if UNITY_IOS
-            StartCoroutine(LoadFeature(featurePath2,objectPath2));
-#endif
-        }
-
     }
 
     private void LoadObject(string path)
@@ -56,10 +43,7 @@ public class EM_Load : MonoBehaviour
         string json = "";
         try
         {
-            using (StreamReader sr = new StreamReader(path))
-            {
-                json = sr.ReadLine();
-            }
+            json = File.ReadAllText(path);
         }
         catch (Exception e)
         {
@@ -97,27 +81,29 @@ public class EM_Load : MonoBehaviour
             mapObject.transform.rotation = Quaternion.Euler(map.rotation);
             mapObject.transform.localScale = map.scale;
 
+            mapList.Add(mapObject);
             mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray();
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
 
-            mapList.Add(mapObject);
         }
         foreach (Destination dest in root.destinations)
         {
             GameObject destObject = Instantiate(destination, dest.position, Quaternion.Euler(dest.rotation));
             destObject.transform.localScale = dest.scale;
-            for (int i = 0; i < 7; i++)
+            destObject.GetComponent<TextMesh>().text = dest.textData[0];
+            for (int i = 1; i < 8; i++)
             {
-                destObject.transform.GetChild(i).gameObject.GetComponent<TextMesh>().text = dest.textData[i];
+                destObject.transform.GetChild(i - 1).gameObject.GetComponent<TextMesh>().text = dest.textData[i];
             }
-            destinationList.Add(destObject);
+            destObject.SetActive(false);
+            CommonVariables.destinationList.Add(destObject);
         }
     }
 
 #if UNITY_IOS
     IEnumerator LoadFeature(string feature, string obje)
     {
-        var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession[sessionCount++].subsystem;
+        var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
         if (sessionSubsystem == null)
         {
             yield break;
@@ -169,4 +155,15 @@ public class EM_Load : MonoBehaviour
         }
     }
 #endif
+    private void Update()
+    {
+#if UNITY_IOS
+        var sessionSubsystem = (ARKitSessionSubsystem)m_ARSession.subsystem;
+#else
+        XRSessionSubsystem sessionSubsystem = null;
+#endif
+        if (sessionSubsystem == null)
+            return;
+
+    }
 }

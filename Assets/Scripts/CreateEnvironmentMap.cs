@@ -21,7 +21,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     List<GameObject> particles = new List<GameObject>();
     [SerializeField] Vector3[] allPoints;
     private List<int> selected = new List<int>(); // 必要ないかも
-    private static Vector3 yValue= Vector3.zero;
+    private static Vector3 yValue = Vector3.zero;
     private static bool placing = false;
     private static bool landmark = false;
 
@@ -34,6 +34,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     [SerializeField] GameObject destination; // 目的地となる物体
     private List<GameObject> destinationLists = new List<GameObject>(); // 目的地の情報を全て保持
     private int landMarkSelect = -1;
+    [SerializeField] InputField bookName;
     // [SerializeField] GameObject upStair; // 階層移動地点
     // private List<GameObject> upStairs = new List<GameObject>(); // 目的地の情報を全て保持
     // private int upStairSelect = -1;
@@ -61,7 +62,6 @@ public class CreateEnvironmentMap : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
             {
-               
                 return;
             }
             else
@@ -105,18 +105,15 @@ public class CreateEnvironmentMap : MonoBehaviour
                     }
                     else
                     {
-                        statusText.text = landmark.ToString();
                         if (landmark)
                         {
                             if (landMarkSelect != -1)
                             {
-                                statusText.text = "bbbb";
                                 // 目的地の物体を移動
                                 destinationLists[landMarkSelect].transform.position = touchPosition;
                             }
                             else
                             {
-                                statusText.text = "aaaa";
                                 // 新規で目的地の物体を作成
                                 destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
                                 landMarkSelect = destinationLists.Count - 1;
@@ -135,7 +132,7 @@ public class CreateEnvironmentMap : MonoBehaviour
         int count = navMesh.list.Count;
         List<Vector3> all = new List<Vector3>();
         for (int i = 0; i < count; i++) all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
-        
+
         return all.ToArray();
     }
 
@@ -181,7 +178,7 @@ public class CreateEnvironmentMap : MonoBehaviour
     public void CreateMesh()
     {
         mesh = new GameObject("mesh");
-        navMesh =  mesh.AddComponent<NavMeshObject>();
+        navMesh = mesh.AddComponent<NavMeshObject>();
         navManager = mesh.AddComponent<NavMeshManager>();
         statusText.enabled = true;
         particles.Clear();
@@ -201,7 +198,7 @@ public class CreateEnvironmentMap : MonoBehaviour
         newNavMesh.AddComponent<MeshFilter>();
         newNavMesh.AddComponent<MeshRenderer>();
         newNavMesh.tag = "mapNavMesh";
-        
+
         navMesh = newNavMesh.GetComponent<NavMeshObject>();
         MeshRenderer mRenderer = newNavMesh.GetComponent<MeshRenderer>();
         mRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -219,9 +216,13 @@ public class CreateEnvironmentMap : MonoBehaviour
     }
     public void MapButton()
     {
+        if (landMarkSelect != -1)
+        {
+            destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
+            bookName.text = "";
+        }
         landmark = false;
         landMarkSelect = -1;
-        // PTタグを付与した選択地点のパーティクルを検出
         if (!placing)
         {
             GameObject newObj = newNavMesh.GetComponent<NavMeshObject>().CreateSubMesh();

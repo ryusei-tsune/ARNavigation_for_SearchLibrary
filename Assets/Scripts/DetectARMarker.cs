@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -30,14 +28,11 @@ public class DetectARMarker : MonoBehaviour
     [SerializeField] Text statusText;              //状態をテキストで表示
 
     ARTrackedImageManager m_TrackedImageManager;        //画像追跡を行うクラス
-    Dictionary<string, Vector3> markerPosList;
-    bool[] marker = { false, false };
+    public static List<Marker> markerPosList = new List<Marker>();
+    bool[] marker = { false, false, false, false}; // マーカの個数分
 
     void Awake()
     {
-        // marker = new bool[2];
-        // marker = Enumerable.Repeat<bool>(false, 2).ToArray();
-        markerPosList = new Dictionary<string, Vector3>();
         statusText.enabled = false;
         m_TrackedImageManager = GetComponent<ARTrackedImageManager>();
     }
@@ -62,6 +57,7 @@ public class DetectARMarker : MonoBehaviour
             string markerName = trackedImage.referenceImage.name;
             int num = int.Parse(Regex.Replace(markerName, @"[^0-9]", ""));
 
+
             if (!marker[num])
             {
                 statusText.text = "Recognize Image";
@@ -70,7 +66,8 @@ public class DetectARMarker : MonoBehaviour
                 //認識した画像の名前を文字列に
                 try
                 {
-                    markerPosList.Add(num.ToString(), markerPos);
+                    Marker marker = new Marker(num, markerPos);
+                    markerPosList.Add(marker);
                     statusText.text = "x: " + markerPos.x + "\ny: " + markerPos.y + "\nz: " + markerPos.z;
                 }
                 catch (Exception e)
@@ -101,28 +98,5 @@ public class DetectARMarker : MonoBehaviour
             UpdateInfo(trackedImage);
         }
 
-    }
-
-    public void PositionSave()
-    {
-        if (inputField.text != "")
-        {
-            string filename = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.txt";
-            try
-            {
-                using (StreamWriter sw = new StreamWriter(filename, true, Encoding.GetEncoding("utf-8")))
-                {
-                    foreach (var marker in markerPosList)
-                    {
-                        string json = marker.Key + ": (" + marker.Value.x + ", " + marker.Value.y + ", " + marker.Value.z + ")";
-                        sw.WriteLine(json);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                statusText.text = e.ToString();
-            }
-        }
     }
 }
