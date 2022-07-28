@@ -74,4 +74,4 @@ crashlytics-build.properties
 /[Aa]ssets/Scripts/[Tt]est*
 /[Aa]ssets/Scenes/TestScene.unity
 
-/[Aa]ssets/Resources/[Tt]est*
+/[Aa]ssets/Resources/
