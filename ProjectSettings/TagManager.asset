@@ -9,6 +9,8 @@ TagManager:
   - mapNavMesh
   - Destination
   - ARSessionOrigin
+  - PanelContent
+  - ScrollView
   layers:
   - Default
   - TransparentFX
