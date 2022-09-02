@@ -6,7 +6,7 @@ public class Infomation
 }
 
 public static class BookInformation {
-    public static int floor;
+    public static int floor = -1;
     public static string bookTitle = "";
     public static string bookAuthor = "";
     public static string bookCode = "";

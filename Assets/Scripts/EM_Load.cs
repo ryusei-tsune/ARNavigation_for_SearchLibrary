@@ -22,14 +22,18 @@ public class EM_Load : MonoBehaviour
     private string objectPath;
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
-    void Awake()
-    {
-        ARMap = Instantiate(mapInstantiate);
-    }
+
     public void LoadButton()
     {
-        featurePath = Application.persistentDataPath + "/" + "Test1-Feature.ARMap";
-        objectPath = Application.persistentDataPath + "/" + "Test1-Object.json";
+        if (BookInformation.floor == -1)
+        {
+            featurePath = Application.persistentDataPath + "/" + "2.ARMap";
+            objectPath = Application.persistentDataPath + "/" + "2.json";
+        }
+        else {
+            featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
+            objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
+        }
         if (File.Exists(featurePath))
         {
 #if UNITY_IOS
@@ -40,6 +44,7 @@ public class EM_Load : MonoBehaviour
 
     private void LoadObject(string path)
     {
+        ARMap = Instantiate(mapInstantiate);
         string json = "";
         try
         {
@@ -49,21 +54,7 @@ public class EM_Load : MonoBehaviour
         {
             statusText.text = e.ToString();
         }
-        /*{"maps":
-            [
-                {
-                    "position":{"x":1.0,"y":2.0,"z":3.0},
-                    "rotation":{"x":0.0,"y":0.0,"z":0.0},
-                    "scale":{"x":0.0,"y":0.0,"z":0.0},
-                    "meshVertices":[],
-                    "meshTriangles":[]
-                }
-            ],
-            "destinations":
-            [
-
-            ]
-        }*/
+        
         Root root = JsonUtility.FromJson<Root>(json);
         foreach (Map map in root.maps)
         {
@@ -81,9 +72,9 @@ public class EM_Load : MonoBehaviour
             mapObject.transform.rotation = Quaternion.Euler(map.rotation);
             mapObject.transform.localScale = map.scale;
 
-            mapList.Add(mapObject);
             mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray();
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
+            mapList.Add(mapObject);
 
         }
         foreach (Destination dest in root.destinations)
@@ -155,6 +146,16 @@ public class EM_Load : MonoBehaviour
         }
     }
 #endif
+
+    public void ResetButton() {
+        Destroy(ARMap);
+        m_ARSession.Reset();
+        foreach (GameObject target in CommonVariables.destinationList) {
+            Destroy(target);
+        }
+        CommonVariables.destinationList.Clear();
+        statusText.text = "Reset";
+    }
     private void Update()
     {
 #if UNITY_IOS
