@@ -46,10 +46,15 @@ public class EM_Save : MonoBehaviour
             {
                 File.Delete(objectPath);
             }
+            if (File.Exists(markerPath))
+            {
+                File.Delete(markerPath);
+            }
             SaveObject();
 #if UNITY_IOS
             StartCoroutine(SaveFeature());
 #endif
+            inputField.text = "";
         }
     }
 
@@ -122,7 +127,7 @@ public class EM_Save : MonoBehaviour
                 sw.WriteLine(json);
             }
 
-            using (StreamWriter sw = new StreamWriter(markerPath, true, Encoding.GetEncoding("utf-8")))
+            using (StreamWriter sw = new StreamWriter(markerPath, false, Encoding.GetEncoding("utf-8")))
             {
                 List<string> jsonList = new List<string>();
                 foreach (var marker in DetectARMarker.markerPosList)

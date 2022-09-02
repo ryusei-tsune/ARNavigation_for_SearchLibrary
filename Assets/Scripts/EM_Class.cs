@@ -40,4 +40,5 @@ public class Marker
 public static class CommonVariables
 {
     public static List<GameObject> destinationList = new List<GameObject>();
+    public static int currntFloor = 0;
 }

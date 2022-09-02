@@ -29,10 +29,15 @@ public class DetectARMarker : MonoBehaviour
 
     ARTrackedImageManager m_TrackedImageManager;        //画像追跡を行うクラス
     public static List<Marker> markerPosList = new List<Marker>();
-    bool[] marker = { false, false, false, false}; // マーカの個数分
+    bool[] marker = new bool[9]; // マーカの個数分
 
     void Awake()
     {
+        // マーカ検出の初期化
+        for (int i = 0; i < 9; i++)
+        {
+            marker[i] = false;
+        }
         statusText.enabled = false;
         m_TrackedImageManager = GetComponent<ARTrackedImageManager>();
     }
