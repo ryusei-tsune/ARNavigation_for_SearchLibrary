@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Linq;
 using UnityEngine;
 using Unity.Collections;
 using UnityEngine.AI;
@@ -42,15 +44,16 @@ public class EM_Load : MonoBehaviour
         // ファイル名を 'dataPath/~' から '~' に変更
         foreach (string filename in tempFileLists)
         {
-            string t;
+            string temp;
 #if UNITY_EDITOR
-            t = filename.Replace(Application.dataPath + "/", "");
+            temp = filename.Replace(Application.dataPath + "/", "");
 #elif UNITY_IPHONE
-            t = filename.Replace(Application.persistentDataPath + "/", "");
+            temp = filename.Replace(Application.persistentDataPath + "/", "");
 #endif
-            dropOptions.Add(t);   //ファイル名を一時的に格納
+            if (Regex.IsMatch(temp, @".json|.ARMap")) dropOptions.Add(temp.Substring(0, Regex.Matches(temp, @".json|.ARMap")[0].Index));   //ファイル名を一時的に格納
         }
 
+        dropOptions = dropOptions.Distinct().ToList<string>();
         fileSelector.ClearOptions();
         fileSelector.AddOptions(dropOptions);
     }
