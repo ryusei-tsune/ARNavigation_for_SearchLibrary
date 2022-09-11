@@ -60,6 +60,7 @@ public class EM_Save : MonoBehaviour
 
     private void SaveObject()
     {
+        // 環境マップの根幹
         Root root = new Root();
         root.maps = new List<Map>();
         root.destinations = new List<Destination>();
@@ -67,21 +68,17 @@ public class EM_Save : MonoBehaviour
         GameObject mapHolder = GameObject.FindGameObjectWithTag("MapGameObject");
         Transform[] mapMeshs = mapHolder.GetComponentsInChildren<Transform>();
 
-        /*
-            環境マップの歩行可能領域(Meshオブジェクト)の保存
-        */
+        // 環境マップの歩行可能領域(Meshオブジェクト)の保存
         if (mapMeshs.Length > 1)
         {
             for (int i = 1; i < mapMeshs.Length; i++)
             {
                 Map map = new Map();
-
                 map.position = mapMeshs[i].transform.position;
                 map.rotation = mapMeshs[i].transform.rotation.eulerAngles;
                 map.scale = mapMeshs[i].transform.localScale;
 
                 Mesh mapMeshFilter = mapMeshs[i].GetComponent<MeshFilter>().mesh;
-
                 map.meshVertices = new List<Vector3>();
                 Vector3[] vertices = mapMeshFilter.vertices;
                 for (int j = 0; j < vertices.Length; j++)
@@ -99,9 +96,8 @@ public class EM_Save : MonoBehaviour
                 root.maps.Add(map);
             }
         }
-        /*
-            目的地となるオブジェクトの保存
-        */
+        
+        // 目的地となるオブジェクトの保存
         GameObject[] destinationList = GameObject.FindGameObjectsWithTag("Destination");
         foreach (GameObject dest in destinationList)
         {
@@ -118,15 +114,17 @@ public class EM_Save : MonoBehaviour
             }
             root.destinations.Add(destination);
         }
+
         string json;
         try
         {
+            // 環境マップの保存
             using (StreamWriter sw = new StreamWriter(objectPath, false, Encoding.GetEncoding("utf-8")))
             {
                 json = JsonUtility.ToJson(root);
                 sw.WriteLine(json);
             }
-
+            // 検出したARマーカのIDと座標を保存
             using (StreamWriter sw = new StreamWriter(markerPath, false, Encoding.GetEncoding("utf-8")))
             {
                 List<string> jsonList = new List<string>();

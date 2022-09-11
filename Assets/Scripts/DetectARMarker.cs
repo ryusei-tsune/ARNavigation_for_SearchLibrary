@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -13,30 +12,17 @@ using UnityEngine.XR.ARFoundation;
 [RequireComponent(typeof(ARTrackedImageManager))]
 public class DetectARMarker : MonoBehaviour
 {
-    /// <summary>
-    /// The prefab has a world space UI canvas,
-    /// which requires a camera to function properly.
-    /// </summary>
-    [SerializeField] Camera m_WorldSpaceCanvasCamera;
-
-    /// <summary>
-    /// If an image is detected but no source texture can be found,
-    /// this texture is used instead.
-    /// </summary>
-
-    [SerializeField] InputField inputField;
     [SerializeField] Text statusText;              //状態をテキストで表示
-
     ARTrackedImageManager m_TrackedImageManager;        //画像追跡を行うクラス
-    public static List<Marker> markerPosList = new List<Marker>();
-    bool[] marker = new bool[9]; // マーカの個数分
+    public static List<Marker> markerPosList = new List<Marker>(); // 検出したマーカーのリスト
+    bool[] markerFlag = new bool[9]; // マーカの個数分
 
     void Awake()
     {
         // マーカ検出の初期化
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 14; i++)
         {
-            marker[i] = false;
+            markerFlag[i] = false;
         }
         statusText.enabled = false;
         m_TrackedImageManager = GetComponent<ARTrackedImageManager>();
@@ -59,31 +45,28 @@ public class DetectARMarker : MonoBehaviour
         //画像を認識した際に実行
         if ((trackedImage.trackingState != TrackingState.None))
         {
+            // マーカの名前(ID)を取得
             string markerName = trackedImage.referenceImage.name;
             int num = int.Parse(Regex.Replace(markerName, @"[^0-9]", ""));
 
-
-            if (!marker[num])
+            // マーカIDが既に検出済みか確認
+            if (!markerFlag[num])
             {
                 statusText.text = "Recognize Image";
+                // マーカ座標
                 Vector3 pos = trackedImage.transform.position;
                 Vector3 markerPos = trackedImage.transform.TransformPoint(pos.x, pos.y, pos.z);
-                //認識した画像の名前を文字列に
-                try
-                {
-                    Marker marker = new Marker(num, markerPos);
-                    markerPosList.Add(marker);
-                    statusText.text = "x: " + markerPos.x + "\ny: " + markerPos.y + "\nz: " + markerPos.z;
-                }
-                catch (Exception e)
-                {
-                    statusText.text = "already" + e;
-                }
 
-                //VariableCP.currentfloor = int.Parse(Regex.Replace(filename, @"[^0-9]", "")); //環境マップを読み込んだ階が何階か判定
-                //FileController.GetComponent<UFileIO>().enabled = true;  //UFileIO.csのプログラム起動
-                marker[num] = true;
+                // マーカのID と座標をセットで保持
+                Marker marker = new Marker(num, markerPos);
+                markerPosList.Add(marker);
+                statusText.text = "x: " + markerPos.x + "\ny: " + markerPos.y + "\nz: " + markerPos.z;
+
+                markerFlag[num] = true;
             }
+            // ARマーカを読み込むことで現在の階を判断する場合，以下の二つを使い，EM_Loadを一部書き換え
+            // CommonVariables.currntFloor = int.Parse(Regex.Replace(markerName, @"[^0-9]", "")); //環境マップを読み込んだ階が何階か判定
+            // FileController.GetComponent<EM_Load>().enabled = true;  //EM_Load.csのプログラム起動
         }
     }
 

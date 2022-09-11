@@ -7,7 +7,6 @@ using Unity.Collections;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.ARSubsystems;
 #if UNITY_IOS
 using UnityEngine.XR.ARKit;
 #endif
@@ -15,9 +14,10 @@ public class EM_Load : MonoBehaviour
 {
     [SerializeField] ARSession m_ARSession;
     [SerializeField] Text statusText;
-    [SerializeField] GameObject mapInstantiate;
-    [SerializeField] Material mapMaterial;
-    [SerializeField] GameObject destination;
+    [SerializeField] GameObject mapInstantiate; //環境マップの基となるオブジェクト
+    [SerializeField] Material mapMaterial; // 歩行可能領域の色
+    [SerializeField] GameObject destination; // 本棚のオブジェクト
+    [SerializeField] Dropdown fileSelector; // 本棚のオブジェクト
     private string featurePath;
     private string objectPath;
     private GameObject ARMap;
@@ -27,10 +27,14 @@ public class EM_Load : MonoBehaviour
     {
         if (BookInformation.floor == -1)
         {
-            featurePath = Application.persistentDataPath + "/" + "2.ARMap";
-            objectPath = Application.persistentDataPath + "/" + "2.json";
+            // 開始時に環境マップをロード
+            featurePath = Application.persistentDataPath + "/" + "1.ARMap";
+            objectPath = Application.persistentDataPath + "/" + "1.json";
+            CommonVariables.currntFloor = 1;
         }
-        else {
+        else
+        {
+            // 検索結果を基に該当する階に移動した後，環境マップをロード
             featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
             objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
         }
@@ -52,9 +56,9 @@ public class EM_Load : MonoBehaviour
         }
         catch (Exception e)
         {
-            statusText.text = e.ToString();
+            statusText.text = e?.Message;
         }
-        
+        // 環境マップの情報を利用可能なように分解していく
         Root root = JsonUtility.FromJson<Root>(json);
         foreach (Map map in root.maps)
         {
@@ -147,15 +151,20 @@ public class EM_Load : MonoBehaviour
     }
 #endif
 
-    public void ResetButton() {
-        Destroy(ARMap);
+    // 階を移動する場合，前の環境マップを削除する際に使用
+    public void ResetButton()
+    {
         m_ARSession.Reset();
-        foreach (GameObject target in CommonVariables.destinationList) {
+        Destroy(ARMap);
+        mapList.Clear();
+        foreach (GameObject target in CommonVariables.destinationList)
+        {
             Destroy(target);
         }
         CommonVariables.destinationList.Clear();
         statusText.text = "Reset";
     }
+
     private void Update()
     {
 #if UNITY_IOS
