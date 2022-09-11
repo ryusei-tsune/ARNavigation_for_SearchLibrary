@@ -23,6 +23,38 @@ public class EM_Load : MonoBehaviour
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
 
+    private void Start()
+    {
+        GetDropdownList();
+    }
+
+    private void GetDropdownList()
+    {
+        // /dataPath/に存在するファイル名をfileSelectorに追加
+#if UNITY_EDITOR
+        string[] tempFileLists = Directory.GetFiles(Application.dataPath + "/");
+#elif UNITY_IPHONE
+        string[] tempFileLists = Directory.GetFiles(Application.persistentDataPath + "/");
+#endif
+
+        List<string> dropOptions = new List<string>();
+
+        // ファイル名を 'dataPath/~' から '~' に変更
+        foreach (string filename in tempFileLists)
+        {
+            string t;
+#if UNITY_EDITOR
+            t = filename.Replace(Application.dataPath + "/", "");
+#elif UNITY_IPHONE
+            t = filename.Replace(Application.persistentDataPath + "/", "");
+#endif
+            dropOptions.Add(t);   //ファイル名を一時的に格納
+        }
+
+        fileSelector.ClearOptions();
+        fileSelector.AddOptions(dropOptions);
+    }
+
     public void LoadButton()
     {
         if (BookInformation.floor == -1)
