@@ -11,6 +11,7 @@ public class BookSearch : MonoBehaviour
     public static BookSearch instance = null;
     // スクレイピングを行う API のエンドポイント
     private string fetchDataUrl = "https://scraping-okadai-library.herokuapp.com/api/scraping";
+    // private string fetchDataUrl = "https://scraping-okadai-library.onrender.com/api/scraping"; //念のためスクレイピングアプリを別のサービスでもホスティング
     private GameObject ScrollView;
     private GameObject panelContent;
     [SerializeField] Text statusText;

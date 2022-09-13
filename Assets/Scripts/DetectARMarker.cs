@@ -15,12 +15,12 @@ public class DetectARMarker : MonoBehaviour
     [SerializeField] Text statusText;              //状態をテキストで表示
     ARTrackedImageManager m_TrackedImageManager;        //画像追跡を行うクラス
     public static List<Marker> markerPosList = new List<Marker>(); // 検出したマーカーのリスト
-    bool[] markerFlag = new bool[9]; // マーカの個数分
+    bool[] markerFlag = new bool[27]; // マーカの個数分
 
     void Awake()
     {
         // マーカ検出の初期化
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i < 27; i++)
         {
             markerFlag[i] = false;
         }

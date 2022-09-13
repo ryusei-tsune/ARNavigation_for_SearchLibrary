@@ -63,9 +63,9 @@ public class EM_Load : MonoBehaviour
         if (BookInformation.floor == -1)
         {
             // 開始時に環境マップをロード
-            featurePath = Application.persistentDataPath + "/" + "1.ARMap";
-            objectPath = Application.persistentDataPath + "/" + "1.json";
-            CommonVariables.currntFloor = 1;
+            featurePath = Application.persistentDataPath + "/" + fileSelector.captionText.text + ".ARMap";
+            objectPath = Application.persistentDataPath + "/" + fileSelector.captionText.text + ".json";
+            CommonVariables.currntFloor = int.Parse(Regex.Replace(fileSelector.captionText.text, @"[^0-9]+", ""));
         }
         else
         {
@@ -128,6 +128,7 @@ public class EM_Load : MonoBehaviour
             destObject.SetActive(false);
             CommonVariables.destinationList.Add(destObject);
         }
+        statusText.text = "現在位置 : " + CommonVariables.currntFloor + "\n登録本棚数 : " + CommonVariables.destinationList.Count;
     }
 
 #if UNITY_IOS
