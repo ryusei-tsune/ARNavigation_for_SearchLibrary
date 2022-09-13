@@ -36,10 +36,10 @@ public class CreateEnvironmentMap : MonoBehaviour
     private int landMarkSelect = -1;
     [SerializeField] InputField bookName;
     // [SerializeField] GameObject upStair; // 階層移動地点
-    // private List<GameObject> upStairs = new List<GameObject>(); // 目的地の情報を全て保持
+    // private List<GameObject> upStairs = new List<GameObject>();
     // private int upStairSelect = -1;
     // [SerializeField] GameObject downStair; // 階層移動地点
-    // private List<GameObject> downStairs = new List<GameObject>(); // 目的地の情報を全て保持
+    // private List<GameObject> downStairs = new List<GameObject>(); //
     // private int downStairSelect = -1;
 
     [SerializeField] Text statusText;
@@ -81,7 +81,7 @@ public class CreateEnvironmentMap : MonoBehaviour
 
                     // navMeshに登録されている点を配列で取得
                     allPoints = ConvertAllPoints();
-
+                    // 既に選択したことがある点か判断，新規の場合-1
                     int dragIndex = FindClosest(touch);
 
                     if (placing)
@@ -91,14 +91,17 @@ public class CreateEnvironmentMap : MonoBehaviour
 
                         if (navMesh.current.Contains(dragIndex))
                         {
+                            // 選択中の点である場合
                             navMesh.AddPoint(navMesh.transform.TransformPoint(navMesh.list[dragIndex]));
                         }
                         else if (dragIndex >= 0)
                         {
+                            // これまでに作成した点
                             navMesh.AddPoint(dragIndex);
                         }
                         else
                         {
+                            // 新規の点
                             navMesh.AddPoint(touchPosition);
                         }
                         navMesh.CreateMesh();
@@ -129,6 +132,8 @@ public class CreateEnvironmentMap : MonoBehaviour
 
     private Vector3[] ConvertAllPoints()
     {
+        // Vector3 のリストである NavMeshObject.list の値をそれぞれ TransformPoint し，
+        // そのリストを配列に変換する
         int count = navMesh.list.Count;
         List<Vector3> all = new List<Vector3>();
         for (int i = 0; i < count; i++) all.Add(navMesh.transform.TransformPoint(navMesh.list[i]));
@@ -142,23 +147,26 @@ public class CreateEnvironmentMap : MonoBehaviour
         int nearPoint = -1;
         for (int i = 0; i < allPoints.Length; i++)
         {
+            // 選択した点との距離が基準値以下であれば，リストに追加
             Vector2 screenPoint = Camera.current.WorldToScreenPoint(allPoints[i]);
             if (Vector2.Distance(screenPoint, touch.position) < 100)
             {
                 closest.Add(i);
             }
         }
-
         if (closest.Count == 0)
         {
+            // 選択した点に近い点は存在しないため，-1を返す
             return nearPoint;
         }
         else if (closest.Count == 1)
         {
+            // 選択した点に近い1点の index を返す
             return closest[0];
         }
         else
         {
+            // 選択した点に近い点が複数存在，最も近い点を求める
             Vector3 camPos = Camera.current.transform.position;
             float nearDist = float.MaxValue;
             for (int i = 0; i < closest.Count; i++)
@@ -214,27 +222,28 @@ public class CreateEnvironmentMap : MonoBehaviour
             mRenderer.enabled = false;
         }
     }
+    // 歩行可能領域作成モードに切り替え
     public void MapButton()
     {
+        // 目的地を設置した場合，その目的地のコード(ID)を付与
         if (landMarkSelect != -1)
         {
             destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
             bookName.text = "";
         }
-        landmark = false;
         landMarkSelect = -1;
+
+        // フラグを目的地から歩行可能領域に変更
+        landmark = false;
         if (!placing)
         {
             GameObject newObj = newNavMesh.GetComponent<NavMeshObject>().CreateSubMesh();
-            placing = true;
-            statusText.text = "map";
         }
-        else
-        {
-            ConfirmMap();
-        }
+        placing = true;
+        statusText.text = "map";
     }
 
+    // 目的地作成モードに切り替え
     public void LandMarkButton()
     {
         placing = false;
@@ -250,13 +259,14 @@ public class CreateEnvironmentMap : MonoBehaviour
         landmark = true;
         statusText.text = "landmark";
     }
+
     // 指定した歩行可能領域の確定
     private void ConfirmMap()
     {
         GameObject[] particleList = GameObject.FindGameObjectsWithTag("PT");
         foreach (var item in particleList)
         {
-            Destroy(item); //  item.SetActive(false);
+            Destroy(item);
         }
         CheckCombine();
 

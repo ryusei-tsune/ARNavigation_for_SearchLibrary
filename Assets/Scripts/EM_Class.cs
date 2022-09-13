@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+// 環境マップの根幹
 public class Root
 {
     public List<Map> maps;
     public List<Destination> destinations;
 }
-
+// 環境マップの歩行可能領域に関する情報を保持
 [Serializable]
 public class Map
 {
@@ -17,6 +18,7 @@ public class Map
     public List<int> meshTriangles;
 }
 [Serializable]
+// 環境マップの目的地(本棚)に関する情報を保持
 public class Destination
 {
     public Vector3 position;
@@ -24,7 +26,7 @@ public class Destination
     public Vector3 scale;
     public string[] textData;
 }
-
+// マーカIDと座標をセットで管理
 public class Marker
 {
     public int id;
@@ -36,7 +38,7 @@ public class Marker
         position = pos;
     }
 }
-
+// 現在の階や目的地等，複数のクラスで利用する変数を保持
 public static class CommonVariables
 {
     public static List<GameObject> destinationList = new List<GameObject>();

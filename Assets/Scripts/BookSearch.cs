@@ -1,25 +1,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
 public class BookSearch : MonoBehaviour
 {
+    // 他のクラス(Navigationクラス)でBookSearchクラスの関数を呼び出すため
     public static BookSearch instance = null;
+    // スクレイピングを行う API のエンドポイント
     private string fetchDataUrl = "https://scraping-okadai-library.herokuapp.com/api/scraping";
-    private string fetchDetailUrl = "https://scraping-okadai-library.herokuapp.com/api/detail-information";
+    // private string fetchDataUrl = "https://scraping-okadai-library.onrender.com/api/scraping"; //念のためスクレイピングアプリを別のサービスでもホスティング
     private GameObject ScrollView;
     private GameObject panelContent;
     [SerializeField] Text statusText;
     [SerializeField] InputField searchWord;
-    [SerializeField] GameObject bookPanel;
+    [SerializeField] GameObject bookPanel; // 検索結果1つを表示
     private List<Book> bookList = new List<Book>();
 
     public void Awake()
     {
+        // instance を今作成されているBookSearchクラスに
         instance = this;
     }
     void Start()
@@ -28,15 +30,17 @@ public class BookSearch : MonoBehaviour
         LineRenderer line = agent.GetComponent<LineRenderer>();
         line.enabled = false;
 
-        panelContent = GameObject.FindGameObjectWithTag("PanelContent");
-        ScrollView = GameObject.FindGameObjectWithTag("ScrollView");
+        panelContent = GameObject.FindGameObjectWithTag("PanelContent"); //ScrollViewオブジェクトの子コンポーネント(Content)
+        ScrollView = GameObject.FindGameObjectWithTag("ScrollView"); //ScrollViewオブジェクト本体
         ScrollView.SetActive(false);
     }
 
+    // 検索ボタンが押されたときに発火
     public void SearchKeyword()
     {
         try
         {
+            // 前の検索結果が画面に表示されている場合，一度削除
             foreach (Transform panel in panelContent.GetComponentInChildren<Transform>())
             {
                 Destroy(panel.gameObject);
@@ -50,13 +54,15 @@ public class BookSearch : MonoBehaviour
         }
     }
 
+    // スクレイピングのAPIをたたく
     IEnumerator FetchData()
     {
         string keyword = searchWord.text;
         searchWord.text = "";
         WWWForm form = new WWWForm();
         form.AddField("name", keyword);
-        UnityWebRequest request = UnityWebRequest.Post(fetchDataUrl, form);
+        // ここで通信
+        UnityWebRequest request = UnityWebRequest.Post(fetchDataUrl, form);　
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.ProtocolError || request.result == UnityWebRequest.Result.ConnectionError)
@@ -65,9 +71,11 @@ public class BookSearch : MonoBehaviour
         }
         else
         {
+            // Jsonの配列形式の文字列を受け取る "[{...},{...}]"
             string text = request.downloadHandler.text;
             while (text.Contains("{"))
             {
+                // Json１つ分 {...} を切り出す
                 string tempInfo = text.Substring(text.IndexOf("{"), text.IndexOf("}") - text.IndexOf("{") + 1);
                 text = text.Remove(text.IndexOf("{"), text.IndexOf("}") - text.IndexOf("{") + 1);
                 Book book = JsonUtility.FromJson<Book>(tempInfo);
@@ -76,11 +84,7 @@ public class BookSearch : MonoBehaviour
 
             ScrollView.SetActive(true);
 
-            /*
-            ///////////////////////////////////////////////
-            パネルへの表示方法　要検討
-            ///////////////////////////////////////////////
-            */
+            // 検索結果の一覧を表示
             foreach (Book book in bookList)
             {
                 GameObject panel = Instantiate(bookPanel);
@@ -89,10 +93,10 @@ public class BookSearch : MonoBehaviour
                 panel.transform.GetChild(2).GetComponent<Text>().text = "場所：" + book.position;
                 panel.transform.SetParent(panelContent.transform);
             }
-
         }
     }
 
+    // Navigationクラスで呼ばれ，画面上のテキストの文字を編集
     public void ChangeText(string type)
     {
         switch (type) {
@@ -107,36 +111,6 @@ public class BookSearch : MonoBehaviour
                 break;
             default:
                 break;
-        }
-    }
-
-    IEnumerator FetchDetail()
-    {
-        WWWForm form = new WWWForm();
-        // 変更したい
-        form.AddField("url", this.GetComponent<Text>().text);
-        UnityWebRequest request = UnityWebRequest.Post(fetchDetailUrl, form);
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.ProtocolError || request.result == UnityWebRequest.Result.ConnectionError)
-        {
-            Debug.Log(request.error);
-        }
-        else
-        {
-            Infomation InfomationData = JsonUtility.FromJson<Infomation>(request.downloadHandler.text);
-
-            BookInformation.floor = int.Parse(Regex.Replace(InfomationData.Floor, @"[^0-9]+", "")); // 本棚が何階にあるか判定
-            InfomationData.Location = Regex.Replace(InfomationData.Location, @"/{2,}", "");
-            BookInformation.bookCode = Regex.Replace(InfomationData.Location, @"/$", ""); //本棚のIDを取得
-            //　ここも変えたい
-            BookInformation.bookTitle = this.transform.parent.gameObject.transform.parent.gameObject.GetComponent<Text>().text;
-
-            // foreach (Transform n in Panel.transform)
-            // {
-            //     GameObject.Destroy(n.gameObject);
-            // }
-            // Panel.SetActive(false);
         }
     }
 }

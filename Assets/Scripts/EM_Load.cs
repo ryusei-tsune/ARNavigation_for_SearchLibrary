@@ -2,12 +2,13 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Linq;
 using UnityEngine;
 using Unity.Collections;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.ARSubsystems;
 #if UNITY_IOS
 using UnityEngine.XR.ARKit;
 #endif
@@ -15,21 +16,63 @@ public class EM_Load : MonoBehaviour
 {
     [SerializeField] ARSession m_ARSession;
     [SerializeField] Text statusText;
-    [SerializeField] GameObject mapInstantiate;
-    [SerializeField] Material mapMaterial;
-    [SerializeField] GameObject destination;
+    [SerializeField] GameObject mapInstantiate; //環境マップの基となるオブジェクト
+    [SerializeField] Material mapMaterial; // 歩行可能領域の色
+    [SerializeField] GameObject destination; // 本棚のオブジェクト
+    [SerializeField] Dropdown fileSelector; // 本棚のオブジェクト
     private string featurePath;
     private string objectPath;
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
-    void Awake()
+
+    private void Start()
     {
-        ARMap = Instantiate(mapInstantiate);
+        GetDropdownList();
     }
+
+    private void GetDropdownList()
+    {
+        // /dataPath/に存在するファイル名をfileSelectorに追加
+#if UNITY_EDITOR
+        string[] tempFileLists = Directory.GetFiles(Application.dataPath + "/");
+#elif UNITY_IPHONE
+        string[] tempFileLists = Directory.GetFiles(Application.persistentDataPath + "/");
+#endif
+
+        List<string> dropOptions = new List<string>();
+
+        // ファイル名を 'dataPath/~' から '~' に変更
+        foreach (string filename in tempFileLists)
+        {
+            string temp;
+#if UNITY_EDITOR
+            temp = filename.Replace(Application.dataPath + "/", "");
+#elif UNITY_IPHONE
+            temp = filename.Replace(Application.persistentDataPath + "/", "");
+#endif
+            if (Regex.IsMatch(temp, @".json|.ARMap")) dropOptions.Add(temp.Substring(0, Regex.Matches(temp, @".json|.ARMap")[0].Index));   //ファイル名を一時的に格納
+        }
+
+        dropOptions = dropOptions.Distinct().ToList<string>();
+        fileSelector.ClearOptions();
+        fileSelector.AddOptions(dropOptions);
+    }
+
     public void LoadButton()
     {
-        featurePath = Application.persistentDataPath + "/" + "Test1-Feature.ARMap";
-        objectPath = Application.persistentDataPath + "/" + "Test1-Object.json";
+        if (BookInformation.floor == -1)
+        {
+            // 開始時に環境マップをロード
+            featurePath = Application.persistentDataPath + "/" + fileSelector.captionText.text + ".ARMap";
+            objectPath = Application.persistentDataPath + "/" + fileSelector.captionText.text + ".json";
+            CommonVariables.currntFloor = int.Parse(Regex.Replace(fileSelector.captionText.text, @"[^0-9]+", ""));
+        }
+        else
+        {
+            // 検索結果を基に該当する階に移動した後，環境マップをロード
+            featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
+            objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
+        }
         if (File.Exists(featurePath))
         {
 #if UNITY_IOS
@@ -40,6 +83,7 @@ public class EM_Load : MonoBehaviour
 
     private void LoadObject(string path)
     {
+        ARMap = Instantiate(mapInstantiate);
         string json = "";
         try
         {
@@ -47,23 +91,9 @@ public class EM_Load : MonoBehaviour
         }
         catch (Exception e)
         {
-            statusText.text = e.ToString();
+            statusText.text = e?.Message;
         }
-        /*{"maps":
-            [
-                {
-                    "position":{"x":1.0,"y":2.0,"z":3.0},
-                    "rotation":{"x":0.0,"y":0.0,"z":0.0},
-                    "scale":{"x":0.0,"y":0.0,"z":0.0},
-                    "meshVertices":[],
-                    "meshTriangles":[]
-                }
-            ],
-            "destinations":
-            [
-
-            ]
-        }*/
+        // 環境マップの情報を利用可能なように分解していく
         Root root = JsonUtility.FromJson<Root>(json);
         foreach (Map map in root.maps)
         {
@@ -81,9 +111,9 @@ public class EM_Load : MonoBehaviour
             mapObject.transform.rotation = Quaternion.Euler(map.rotation);
             mapObject.transform.localScale = map.scale;
 
-            mapList.Add(mapObject);
             mapObject.GetComponent<MeshFilter>().mesh.vertices = map.meshVertices.ToArray();
             mapObject.GetComponent<MeshFilter>().mesh.triangles = map.meshTriangles.ToArray();
+            mapList.Add(mapObject);
 
         }
         foreach (Destination dest in root.destinations)
@@ -98,6 +128,7 @@ public class EM_Load : MonoBehaviour
             destObject.SetActive(false);
             CommonVariables.destinationList.Add(destObject);
         }
+        statusText.text = "現在位置 : " + CommonVariables.currntFloor + "\n登録本棚数 : " + CommonVariables.destinationList.Count;
     }
 
 #if UNITY_IOS
@@ -155,6 +186,21 @@ public class EM_Load : MonoBehaviour
         }
     }
 #endif
+
+    // 階を移動する場合，前の環境マップを削除する際に使用
+    public void ResetButton()
+    {
+        m_ARSession.Reset();
+        Destroy(ARMap);
+        mapList.Clear();
+        foreach (GameObject target in CommonVariables.destinationList)
+        {
+            Destroy(target);
+        }
+        CommonVariables.destinationList.Clear();
+        statusText.text = "Reset";
+    }
+
     private void Update()
     {
 #if UNITY_IOS
