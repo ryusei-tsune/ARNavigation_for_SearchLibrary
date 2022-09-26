@@ -29,7 +29,9 @@ public class CreateEnvironmentMap : MonoBehaviour
     private ARRaycastManager raycastManager;
     private List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
 
-    [SerializeField] GameObject elevator;
+    [SerializeField] GameObject elevatorObject;
+    private GameObject elevator;
+    private bool isElevator = false;
 
     [SerializeField] GameObject destination; // 目的地となる物体
     private List<GameObject> destinationLists = new List<GameObject>(); // 目的地の情報を全て保持
@@ -121,9 +123,19 @@ public class CreateEnvironmentMap : MonoBehaviour
                                 destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
                                 landMarkSelect = destinationLists.Count - 1;
                             }
-                        }//  else {
-                        //     elevatorObject.transform.position = touchPosition;
-                        // }
+                        }
+                        else
+                        {
+                            if (isElevator)
+                            {
+                                elevator.transform.position = touchPosition;
+                            }
+                            else
+                            {
+                                elevator = Instantiate(elevatorObject, touchPosition, Quaternion.identity);
+                                isElevator = true;
+                            }
+                        }
                     }
                 }
             }
@@ -232,13 +244,10 @@ public class CreateEnvironmentMap : MonoBehaviour
             bookName.text = "";
         }
         landMarkSelect = -1;
+        isElevator = false;
 
         // フラグを目的地から歩行可能領域に変更
         landmark = false;
-        if (!placing)
-        {
-            GameObject newObj = newNavMesh.GetComponent<NavMeshObject>().CreateSubMesh();
-        }
         placing = true;
         statusText.text = "map";
     }
@@ -246,18 +255,24 @@ public class CreateEnvironmentMap : MonoBehaviour
     // 目的地作成モードに切り替え
     public void LandMarkButton()
     {
-        placing = false;
-        ConfirmMap();
-        // if (!landmark)
-        // {
-        //     landmark = true;
-        // }
-        // else
-        // {
-        //     landmark = false;
-        // }
-        landmark = true;
-        statusText.text = "landmark";
+        if (placing)
+        {
+            ConfirmMap();
+            placing = false;
+            landmark = true;
+            isElevator = false;
+            statusText.text = "landmark";
+        }
+        else
+        {
+            if (landMarkSelect != -1)
+            {
+                destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
+                bookName.text = "";
+            }
+            landMarkSelect = -1;
+            landmark = false;
+        }
     }
 
     // 指定した歩行可能領域の確定
