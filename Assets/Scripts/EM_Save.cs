@@ -13,7 +13,6 @@ using UnityEngine.XR.ARKit;
 #endif
 public class EM_Save : MonoBehaviour
 {
-
     [SerializeField] ARSession m_ARSession;
     [SerializeField] InputField inputField;
     [SerializeField] Text statusText;
@@ -113,6 +112,16 @@ public class EM_Save : MonoBehaviour
                 destination.textData[i] = dest.transform.GetChild(i-1).gameObject.GetComponent<TextMesh>().text;
             }
             root.destinations.Add(destination);
+        }
+
+        GameObject[] elevatorList = GameObject.FindGameObjectsWithTag("Elevator");
+        foreach (GameObject elevator in elevatorList)
+        {
+            MovingPoint movingPoint = new MovingPoint();
+            movingPoint.position = elevator.transform.position;
+            movingPoint.rotation = elevator.transform.rotation.eulerAngles;
+            movingPoint.scale = elevator.transform.localScale;
+            root.movingPoints.Add(movingPoint);
         }
 
         string json;
