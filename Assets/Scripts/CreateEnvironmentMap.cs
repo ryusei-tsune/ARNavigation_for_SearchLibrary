@@ -29,10 +29,12 @@ public class CreateEnvironmentMap : MonoBehaviour
     private ARRaycastManager raycastManager;
     private List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
 
-    [SerializeField] GameObject elevator;
+    [SerializeField] GameObject movingPoint;
+    private List<GameObject> movingPointList = new List<GameObject>();
+    private int movingPointSelect = -1;
 
     [SerializeField] GameObject destination; // 目的地となる物体
-    private List<GameObject> destinationLists = new List<GameObject>(); // 目的地の情報を全て保持
+    private List<GameObject> destinationList = new List<GameObject>(); // 目的地の情報を全て保持
     private int landMarkSelect = -1;
     [SerializeField] InputField bookName;
     // [SerializeField] GameObject upStair; // 階層移動地点
@@ -113,17 +115,27 @@ public class CreateEnvironmentMap : MonoBehaviour
                             if (landMarkSelect != -1)
                             {
                                 // 目的地の物体を移動
-                                destinationLists[landMarkSelect].transform.position = touchPosition;
+                                destinationList[landMarkSelect].transform.position = touchPosition;
                             }
                             else
                             {
                                 // 新規で目的地の物体を作成
-                                destinationLists.Add(Instantiate(destination, touchPosition, Quaternion.identity));
-                                landMarkSelect = destinationLists.Count - 1;
+                                destinationList.Add(Instantiate(destination, touchPosition, Quaternion.identity));
+                                landMarkSelect = destinationList.Count - 1;
                             }
-                        }//  else {
-                        //     elevatorObject.transform.position = touchPosition;
-                        // }
+                        }
+                        else
+                        {
+                            if (movingPointSelect != -1)
+                            {
+                                movingPointList[movingPointSelect].transform.position = touchPosition;
+                            }
+                            else
+                            {
+                                movingPointList.Add(Instantiate(movingPoint, touchPosition, Quaternion.identity));
+                                movingPointSelect = movingPointList.Count - 1;
+                            }
+                        }
                     }
                 }
             }
@@ -228,17 +240,17 @@ public class CreateEnvironmentMap : MonoBehaviour
         // 目的地を設置した場合，その目的地のコード(ID)を付与
         if (landMarkSelect != -1)
         {
-            destinationLists[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
+            destinationList[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
             bookName.text = "";
         }
         landMarkSelect = -1;
-
+        movingPointSelect = -1;
         // フラグを目的地から歩行可能領域に変更
-        landmark = false;
         if (!placing)
         {
             GameObject newObj = newNavMesh.GetComponent<NavMeshObject>().CreateSubMesh();
         }
+        landmark = false;
         placing = true;
         statusText.text = "map";
     }
@@ -246,18 +258,34 @@ public class CreateEnvironmentMap : MonoBehaviour
     // 目的地作成モードに切り替え
     public void LandMarkButton()
     {
-        placing = false;
-        ConfirmMap();
-        // if (!landmark)
-        // {
-        //     landmark = true;
-        // }
-        // else
-        // {
-        //     landmark = false;
-        // }
-        landmark = true;
-        statusText.text = "landmark";
+        // placing=true, landmark=false (歩行可能領域の作成から本棚に切り替え)
+        if (placing)
+        {
+            ConfirmMap();
+            placing = false;
+            landmark = true;
+            statusText.text = "landmark";
+        }
+        else
+        {
+            // placing=false, landmark=true (本棚から階層移動地点に切り替え)
+            if (landmark)
+            {
+                if (landMarkSelect != -1)
+                {
+                    destinationList[landMarkSelect].GetComponent<TextMesh>().text = bookName.text;
+                    bookName.text = "";
+                }
+                landMarkSelect = -1;
+                landmark = false;
+            }
+            // placing=false, landmark=false (階層移動地点から本棚に切り替え)
+            else
+            {
+                movingPointSelect = -1;
+                landmark = true;
+            }
+        }
     }
 
     // 指定した歩行可能領域の確定

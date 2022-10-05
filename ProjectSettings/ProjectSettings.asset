@@ -447,7 +447,7 @@ PlayerSettings:
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 0
   cameraUsageDescription: using for AR
-  locationUsageDescription: 
+  locationUsageDescription: using for location system
   microphoneUsageDescription: 
   bluetoothUsageDescription: 
   switchNMETAOverride: 

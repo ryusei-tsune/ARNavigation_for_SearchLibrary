@@ -19,7 +19,8 @@ public class EM_Load : MonoBehaviour
     [SerializeField] GameObject mapInstantiate; //環境マップの基となるオブジェクト
     [SerializeField] Material mapMaterial; // 歩行可能領域の色
     [SerializeField] GameObject destination; // 本棚のオブジェクト
-    [SerializeField] Dropdown fileSelector; // 本棚のオブジェクト
+    [SerializeField] GameObject elevator; // 移動地点のオブジェクト
+    [SerializeField] Dropdown fileSelector; // 始めにロードする環境マップを選択
     private string featurePath;
     private string objectPath;
     private GameObject ARMap;
@@ -72,6 +73,7 @@ public class EM_Load : MonoBehaviour
             // 検索結果を基に該当する階に移動した後，環境マップをロード
             featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
             objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
+            CommonVariables.currntFloor = BookInformation.floor;
         }
         if (File.Exists(featurePath))
         {
@@ -128,6 +130,15 @@ public class EM_Load : MonoBehaviour
             destObject.SetActive(false);
             CommonVariables.destinationList.Add(destObject);
         }
+
+        foreach (MovingPoint movingPoint in root.movingPoints)
+        {
+            GameObject elevatorObject = Instantiate(elevator, movingPoint.position, Quaternion.Euler(movingPoint.rotation));
+            elevatorObject.transform.localScale = movingPoint.scale;
+            CommonVariables.movingPointList.Add(elevatorObject);
+            elevatorObject.SetActive(false);
+        }
+
         statusText.text = "現在位置 : " + CommonVariables.currntFloor + "\n登録本棚数 : " + CommonVariables.destinationList.Count;
     }
 
@@ -198,6 +209,11 @@ public class EM_Load : MonoBehaviour
             Destroy(target);
         }
         CommonVariables.destinationList.Clear();
+        foreach (GameObject target in CommonVariables.movingPointList) {
+            Destroy(target);
+        }
+        CommonVariables.movingPointList.Clear();
+        GameObject.FindWithTag("MainCamera").GetComponent<LineRenderer>().enabled = false;
         statusText.text = "Reset";
     }
 

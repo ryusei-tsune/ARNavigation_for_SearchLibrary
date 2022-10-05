@@ -11,6 +11,7 @@ TagManager:
   - ARSessionOrigin
   - PanelContent
   - ScrollView
+  - Elevator
   layers:
   - Default
   - TransparentFX
