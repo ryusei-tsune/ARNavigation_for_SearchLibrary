@@ -695,7 +695,7 @@ MonoBehaviour:
   mapMaterial: {fileID: 2100000, guid: 4b8832253018b9a47baaf150372e4c58, type: 2}
   particle: {fileID: 100000, guid: 4a358dee1a983264eb348a5af0cb91d7, type: 3}
   allPoints: []
-  elevatorObject: {fileID: 0}
+  movingPoint: {fileID: 8250148412903197801, guid: a386ffbeb86ae9743892e6157c80c136, type: 3}
   destination: {fileID: 3719023997582125806, guid: d5898e73233a8b7478500a556ae3630e, type: 3}
   bookName: {fileID: 79521665}
   statusText: {fileID: 259715466}
