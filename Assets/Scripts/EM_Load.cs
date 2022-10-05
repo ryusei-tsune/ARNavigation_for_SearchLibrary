@@ -131,10 +131,11 @@ public class EM_Load : MonoBehaviour
             CommonVariables.destinationList.Add(destObject);
         }
 
-        foreach (MovingPoint movingPoint in root.movingPoints){
+        foreach (MovingPoint movingPoint in root.movingPoints)
+        {
             GameObject elevatorObject = Instantiate(elevator, movingPoint.position, Quaternion.Euler(movingPoint.rotation));
             elevatorObject.transform.localScale = movingPoint.scale;
-            CommonVariables.elevatorList.Add(elevatorObject);
+            CommonVariables.movingPointList.Add(elevatorObject);
             elevatorObject.SetActive(false);
         }
 
@@ -208,6 +209,11 @@ public class EM_Load : MonoBehaviour
             Destroy(target);
         }
         CommonVariables.destinationList.Clear();
+        foreach (GameObject target in CommonVariables.movingPointList) {
+            Destroy(target);
+        }
+        CommonVariables.movingPointList.Clear();
+        GameObject.FindWithTag("MainCamera").GetComponent<LineRenderer>().enabled = false;
         statusText.text = "Reset";
     }
 

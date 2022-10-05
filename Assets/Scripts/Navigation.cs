@@ -32,7 +32,7 @@ public class Navigation : MonoBehaviour
             // 同じ階であれば本棚を目的地にセット
             if (CommonVariables.currntFloor != BookInformation.floor)
             {
-                dest = GameObject.FindGameObjectWithTag("Elevator");
+                dest = CommonVariables.movingPointList[0];
             }
             else
             {
@@ -61,11 +61,14 @@ public class Navigation : MonoBehaviour
             {
                 map.GetComponent<NavMeshSurface>().BuildNavMesh();
             }
-            agent.AddComponent<NavMeshAgent>();
+            if (agent.GetComponent<NavMeshAgent>() == null)
+            {
+                agent.AddComponent<NavMeshAgent>();
+            }
             line.enabled = true;
             navAgent = agent.GetComponent<NavMeshAgent>();
             navAgent.radius = 0.1f;
-            
+
             // 目的地がある場合，ナビを表示
             if (dest != null)
             {
