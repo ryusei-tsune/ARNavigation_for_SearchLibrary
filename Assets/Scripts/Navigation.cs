@@ -117,12 +117,18 @@ this.transform.GetChild(0)は子要素の一番目である Title が取得で�
 public class Navigation : MonoBehaviour
 {
     private GameObject agent;
+    private  LineRenderer line;
     private GameObject[] maps;
     private NavMeshAgent navAgent;
     private NavMeshPath path;
     [SerializeField]
     private InputField InputField;
 
+    private void Start() {
+        agent = GameObject.FindWithTag("MainCamera");
+        line = agent.GetComponent<LineRenderer>();
+        line.enabled = false;
+    }
     public void NavigationButton()
     {
         try
@@ -131,9 +137,9 @@ public class Navigation : MonoBehaviour
             // GameObject ScrollView = GameObject.FindGameObjectWithTag("ScrollView");
             // ScrollView.SetActive(false);
             // ユーザー
-            GameObject agent = GameObject.FindWithTag("MainCamera");
+           
             // ナビゲーションの際に表示する矢印
-            LineRenderer line = agent.GetComponent<LineRenderer>();
+            // LineRenderer line = agent.GetComponent<LineRenderer>();
 
             GameObject dest = null;
 
@@ -147,11 +153,6 @@ public class Navigation : MonoBehaviour
                         dest = target;
                     }
                 }
-            }
-            else
-            {
-                BookSearch.instance.ChangeText("none");
-                return;
             }
 
             if (dest == null) {

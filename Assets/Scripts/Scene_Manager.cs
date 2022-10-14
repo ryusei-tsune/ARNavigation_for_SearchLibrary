@@ -18,7 +18,7 @@ public class Scene_Manager : MonoBehaviour
 
     public void OnClickDemo()
     {
-        SceneManager.LoadScene("Demo_Scene", LoadSceneMode.Single);
+        SceneManager.LoadScene("DemoScene", LoadSceneMode.Single);
 
     }
 

@@ -278,12 +278,14 @@ public class CreateEnvironmentMap : MonoBehaviour
                 }
                 landMarkSelect = -1;
                 landmark = false;
+                statusText.text = "elevator";
             }
             // placing=false, landmark=false (階層移動地点から本棚に切り替え)
             else
             {
                 movingPointSelect = -1;
                 landmark = true;
+                statusText.text = "landmark";
             }
         }
     }
