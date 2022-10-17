@@ -34,9 +34,9 @@ public class EM_Save : MonoBehaviour
             inputField.placeholder.GetComponent<Text>().color = Color.grey;
             inputField.placeholder.GetComponent<Text>().text = "Filename";
 
-            featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
-            objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
-            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
+            featurePath = Application.persistentDataPath + "/" + inputField.text + ".ARMap";
+            objectPath = Application.persistentDataPath + "/" + inputField.text + ".json";
+            // markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -63,65 +63,71 @@ public class EM_Save : MonoBehaviour
         Root root = new Root();
         root.maps = new List<Map>();
         root.destinations = new List<Destination>();
+        root.movingPoints = new List<MovingPoint>();
 
-        GameObject mapHolder = GameObject.FindGameObjectWithTag("MapGameObject");
-        Transform[] mapMeshs = mapHolder.GetComponentsInChildren<Transform>();
+        try {
+            GameObject mapHolder = GameObject.FindGameObjectWithTag("MapGameObject");
+            Transform[] mapMeshs = mapHolder.GetComponentsInChildren<Transform>();
 
-        // 環境マップの歩行可能領域(Meshオブジェクト)の保存
-        if (mapMeshs.Length > 1)
-        {
-            for (int i = 1; i < mapMeshs.Length; i++)
+            // 環境マップの歩行可能領域(Meshオブジェクト)の保存
+            if (mapMeshs.Length > 1)
             {
-                Map map = new Map();
-                map.position = mapMeshs[i].transform.position;
-                map.rotation = mapMeshs[i].transform.rotation.eulerAngles;
-                map.scale = mapMeshs[i].transform.localScale;
-
-                Mesh mapMeshFilter = mapMeshs[i].GetComponent<MeshFilter>().mesh;
-                map.meshVertices = new List<Vector3>();
-                Vector3[] vertices = mapMeshFilter.vertices;
-                for (int j = 0; j < vertices.Length; j++)
+                for (int i = 1; i < mapMeshs.Length; i++)
                 {
-                    map.meshVertices.Add(vertices[j]);
-                }
+                    Map map = new Map();
+                    map.position = mapMeshs[i].transform.position;
+                    map.rotation = mapMeshs[i].transform.rotation.eulerAngles;
+                    map.scale = mapMeshs[i].transform.localScale;
 
-                map.meshTriangles = new List<int>();
-                int[] triangles = mapMeshFilter.triangles;
-                for (int j = 0; j < triangles.Length; j++)
-                {
-                    map.meshTriangles.Add(triangles[j]);
-                }
+                    Mesh mapMeshFilter = mapMeshs[i].GetComponent<MeshFilter>().mesh;
+                    map.meshVertices = new List<Vector3>();
+                    Vector3[] vertices = mapMeshFilter.vertices;
+                    for (int j = 0; j < vertices.Length; j++)
+                    {
+                        map.meshVertices.Add(vertices[j]);
+                    }
 
-                root.maps.Add(map);
+                    map.meshTriangles = new List<int>();
+                    int[] triangles = mapMeshFilter.triangles;
+                    for (int j = 0; j < triangles.Length; j++)
+                    {
+                        map.meshTriangles.Add(triangles[j]);
+                    }
+
+                    root.maps.Add(map);
+                }
             }
-        }
-        
-        // 目的地となるオブジェクトの保存
-        GameObject[] destinationList = GameObject.FindGameObjectsWithTag("Destination");
-        foreach (GameObject dest in destinationList)
-        {
-            Destination destination = new Destination();
-
-            destination.position = dest.transform.position;
-            destination.rotation = dest.transform.rotation.eulerAngles;
-            destination.scale = dest.transform.localScale;
-            destination.textData = new string[8];
-            destination.textData[0] = dest.GetComponent<TextMesh>().text;
-            for (int i = 1; i < 8; i++)
+            
+            // 目的地となるオブジェクトの保存
+            GameObject[] destinationList = GameObject.FindGameObjectsWithTag("Destination");
+            foreach (GameObject dest in destinationList)
             {
-                destination.textData[i] = dest.transform.GetChild(i-1).gameObject.GetComponent<TextMesh>().text;
-            }
-            root.destinations.Add(destination);
-        }
+                Destination destination = new Destination();
 
-        GameObject[] elevatorList = GameObject.FindGameObjectsWithTag("Elevator");
-        foreach (GameObject elevator in elevatorList)
-        {
-            MovingPoint movingPoint = new MovingPoint();
-            movingPoint.position = elevator.transform.position;
-            movingPoint.rotation = elevator.transform.rotation.eulerAngles;
-            movingPoint.scale = elevator.transform.localScale;
-            root.movingPoints.Add(movingPoint);
+                destination.position = dest.transform.position;
+                destination.rotation = dest.transform.rotation.eulerAngles;
+                destination.scale = dest.transform.localScale;
+                destination.textData = new string[8];
+                destination.textData[0] = dest.GetComponent<TextMesh>().text;
+                for (int i = 1; i < 8; i++)
+                {
+                    destination.textData[i] = dest.transform.GetChild(i-1).gameObject.GetComponent<TextMesh>().text;
+                }
+                root.destinations.Add(destination);
+            }
+
+            GameObject[] elevatorList = GameObject.FindGameObjectsWithTag("Elevator"); 
+            foreach (GameObject elevator in elevatorList)
+            {
+                MovingPoint movingPoint = new MovingPoint();
+                
+                movingPoint.position = elevator.transform.position;
+                movingPoint.rotation = elevator.transform.rotation.eulerAngles;
+                movingPoint.scale = elevator.transform.localScale;
+                root.movingPoints.Add(movingPoint);
+            }
+        } catch(Exception e) {
+            statusText.text = e.ToString();
         }
 
         string json;
