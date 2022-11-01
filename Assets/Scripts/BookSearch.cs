@@ -26,10 +26,6 @@ public class BookSearch : MonoBehaviour
     }
     void Start()
     {
-        GameObject agent = GameObject.FindWithTag("MainCamera");
-        LineRenderer line = agent.GetComponent<LineRenderer>();
-        line.enabled = false;
-
         panelContent = GameObject.FindGameObjectWithTag("PanelContent"); //ScrollViewオブジェクトの子コンポーネント(Content)
         ScrollView = GameObject.FindGameObjectWithTag("ScrollView"); //ScrollViewオブジェクト本体
         ScrollView.SetActive(false);
@@ -104,10 +100,27 @@ public class BookSearch : MonoBehaviour
                 statusText.text = BookInformation.bookTitle + "\n\n" + BookInformation.bookAuthor + "\n\n" + "所蔵：" + BookInformation.floor + "F, " + BookInformation.bookCode;
                 break;
             case "none":
-                statusText.text = "この階に本棚は登録されていません";
+                // statusText.text = "この階に本棚は登録されていません";
+                statusText.text = CommonVariables.currntFloor + " != " + BookInformation.floor + " = " + (CommonVariables.currntFloor != BookInformation.floor).ToString() + "   " + CommonVariables.destinationList.Count + " Test " + CommonVariables.movingPointList.Count;
                 break;
             case "failed":
                 statusText.text = "お探しの本は見つかりませんでした";
+                break;
+            case "test1":
+                statusText.text = "test1";
+                break;
+            case "test2":
+                statusText.text = "test2";
+                break;
+            default:
+                break;
+        }
+    }
+    public void ChangeText(string type, string error)
+    {
+        switch (type) {
+            case "error":
+                statusText.text = "error:" + error;
                 break;
             default:
                 break;

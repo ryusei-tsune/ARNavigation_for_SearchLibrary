@@ -16,21 +16,17 @@ public class Navigation : MonoBehaviour
     private NavMeshAgent navAgent;
     private NavMeshPath path;
 
-    private void Start() {
-        // ユーザー
-        agent = GameObject.FindWithTag("MainCamera");
-        // ナビゲーションの際に表示する矢印
-        line = agent.GetComponent<LineRenderer>();
-        line.enabled = false;
-    }
-
     public void NavigationButton()
     {
         try
         {
-            ExtractKeyword();
-            GameObject ScrollView = GameObject.FindGameObjectWithTag("ScrollView");
-            ScrollView.SetActive(false);
+            agent = EM_Load.agent;
+            line = agent.GetComponent<LineRenderer>();
+            if(BookInformation.floor == -1){
+                ExtractKeyword();
+                GameObject ScrollView = GameObject.FindGameObjectWithTag("ScrollView");
+                ScrollView.SetActive(false);
+            }
             
             GameObject dest = null;
             // ユーザの階と本棚の階が違う場合，エレベータ
@@ -58,7 +54,6 @@ public class Navigation : MonoBehaviour
                     return;
                 }
             }
-
             // 歩行可能領域をナビゲーションシステムで利用できるようにビルド
             // ビルドしなければ，システム的には通れないことになっているため，目的地まで案内出来ない
             maps = GameObject.FindGameObjectsWithTag("MapGameObject");
@@ -91,9 +86,9 @@ public class Navigation : MonoBehaviour
                 BookSearch.instance.ChangeText("failed");
             }
         }
-        catch
+        catch(System.Exception e)
         {
-            BookSearch.instance.ChangeText("none");
+            BookSearch.instance.ChangeText("error", e.Message);
         }
     }
 
@@ -105,7 +100,7 @@ public class Navigation : MonoBehaviour
 
         // ex: 場所：津島 中央図書館 西館1F 007.64/S 一般図書
         string bookPosition = this.transform.GetChild(2).GetComponent<Text>().text;
-        // 1F の1を取得
+        // 1F の1を取得(101行目で数字の位置，102行目で値を取得)
         int index = Regex.Matches(bookPosition, @"\d")[0].Index;
         BookInformation.floor = int.Parse(bookPosition[index].ToString());
 

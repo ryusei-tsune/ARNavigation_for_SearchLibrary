@@ -25,9 +25,14 @@ public class EM_Load : MonoBehaviour
     private string objectPath;
     private GameObject ARMap;
     private List<GameObject> mapList = new List<GameObject>();
-
+    public static GameObject agent;
+    public static LineRenderer line;
     private void Start()
     {
+        agent = GameObject.FindWithTag("MainCamera");
+        line = agent.GetComponent<LineRenderer>();
+        line.enabled = false;
+
         GetDropdownList();
     }
 
@@ -74,6 +79,7 @@ public class EM_Load : MonoBehaviour
             featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
             objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
             CommonVariables.currntFloor = BookInformation.floor;
+            new Navigation().NavigationButton();
         }
         if (File.Exists(featurePath))
         {
@@ -213,7 +219,7 @@ public class EM_Load : MonoBehaviour
             Destroy(target);
         }
         CommonVariables.movingPointList.Clear();
-        GameObject.FindWithTag("MainCamera").GetComponent<LineRenderer>().enabled = false;
+        line.enabled = false;
         statusText.text = "Reset";
     }
 
