@@ -79,7 +79,6 @@ public class EM_Load : MonoBehaviour
             featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
             objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
             CommonVariables.currntFloor = BookInformation.floor;
-            new Navigation().NavigationButton();
         }
         if (File.Exists(featurePath))
         {
