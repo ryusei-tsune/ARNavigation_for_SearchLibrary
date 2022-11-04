@@ -100,8 +100,7 @@ public class BookSearch : MonoBehaviour
                 statusText.text = BookInformation.bookTitle + "\n\n" + BookInformation.bookAuthor + "\n\n" + "所蔵：" + BookInformation.floor + "F, " + BookInformation.bookCode;
                 break;
             case "none":
-                // statusText.text = "この階に本棚は登録されていません";
-                statusText.text = CommonVariables.currntFloor + " != " + BookInformation.floor + " = " + (CommonVariables.currntFloor != BookInformation.floor).ToString() + "   " + CommonVariables.destinationList.Count + " Test " + CommonVariables.movingPointList.Count;
+                statusText.text = "この階に本棚は登録されていません";
                 break;
             case "failed":
                 statusText.text = "お探しの本は見つかりませんでした";
