@@ -46,7 +46,7 @@ public class BookSearch : MonoBehaviour
         }
         catch (Exception e)
         {
-            statusText.text = "Error" + e.Message;
+            statusText.text = "Error: " + e.Message;
         }
     }
 
@@ -106,12 +106,6 @@ public class BookSearch : MonoBehaviour
             case "failed":
                 statusText.text = "お探しの本は見つかりませんでした";
                 break;
-            case "test1":
-                statusText.text = "test1";
-                break;
-            case "test2":
-                statusText.text = "test2";
-                break;
             default:
                 break;
         }
@@ -120,9 +114,10 @@ public class BookSearch : MonoBehaviour
     {
         switch (type) {
             case "error":
-                statusText.text = "error:" + error;
+                statusText.text = "Error: " + error;
                 break;
             default:
+                statusText.text = "Error: unknown";
                 break;
         }
     }
