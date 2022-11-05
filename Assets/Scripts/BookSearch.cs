@@ -26,10 +26,6 @@ public class BookSearch : MonoBehaviour
     }
     void Start()
     {
-        GameObject agent = GameObject.FindWithTag("MainCamera");
-        LineRenderer line = agent.GetComponent<LineRenderer>();
-        line.enabled = false;
-
         panelContent = GameObject.FindGameObjectWithTag("PanelContent"); //ScrollViewオブジェクトの子コンポーネント(Content)
         ScrollView = GameObject.FindGameObjectWithTag("ScrollView"); //ScrollViewオブジェクト本体
         ScrollView.SetActive(false);
@@ -50,7 +46,7 @@ public class BookSearch : MonoBehaviour
         }
         catch (Exception e)
         {
-            statusText.text = "Error" + e.Message;
+            statusText.text = "Error: " + e.Message;
         }
     }
 
@@ -110,6 +106,17 @@ public class BookSearch : MonoBehaviour
                 statusText.text = "お探しの本は見つかりませんでした";
                 break;
             default:
+                break;
+        }
+    }
+    public void ChangeText(string type, string error)
+    {
+        switch (type) {
+            case "error":
+                statusText.text = "Error: " + error;
+                break;
+            default:
+                statusText.text = "Error: unknown";
                 break;
         }
     }

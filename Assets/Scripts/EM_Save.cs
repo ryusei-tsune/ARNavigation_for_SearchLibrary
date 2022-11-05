@@ -34,9 +34,9 @@ public class EM_Save : MonoBehaviour
             inputField.placeholder.GetComponent<Text>().color = Color.grey;
             inputField.placeholder.GetComponent<Text>().text = "Filename";
 
-            featurePath = Application.persistentDataPath + "/" + inputField.text + ".ARMap";
-            objectPath = Application.persistentDataPath + "/" + inputField.text + ".json";
-            // markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
+            featurePath = Application.persistentDataPath + "/" + inputField.text + "-Feature.ARMap";
+            objectPath = Application.persistentDataPath + "/" + inputField.text + "-Object.json";
+            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
