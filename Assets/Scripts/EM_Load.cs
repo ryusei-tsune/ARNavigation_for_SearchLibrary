@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Unity.Collections;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -14,7 +15,7 @@ using UnityEngine.XR.ARKit;
 #endif
 public class EM_Load : MonoBehaviour
 {
-    [SerializeField] ARSession m_ARSession;
+    public ARSession m_ARSession;
     [SerializeField] Text statusText;
     [SerializeField] GameObject mapInstantiate; //環境マップの基となるオブジェクト
     [SerializeField] Material mapMaterial; // 歩行可能領域の色
@@ -34,6 +35,10 @@ public class EM_Load : MonoBehaviour
         line.enabled = false;
 
         GetDropdownList();
+
+        if (BookInformation.floor != -1){
+            statusText.text = "移動先は" + BookInformation.floor + "階です！";
+        }
     }
 
     private void GetDropdownList()
@@ -144,7 +149,7 @@ public class EM_Load : MonoBehaviour
             elevatorObject.SetActive(false);
         }
 
-        statusText.text = "現在位置 : " + CommonVariables.currntFloor + "\n登録本棚数 : " + CommonVariables.destinationList.Count;
+        statusText.text = "現在位置 : " + CommonVariables.currntFloor + "階\n";
     }
 
 #if UNITY_IOS
@@ -194,7 +199,7 @@ public class EM_Load : MonoBehaviour
         sessionSubsystem.ApplyWorldMap(worldMap);
 
         file.Close();
-        statusText.text = "Load";
+        statusText.text = "環境マップのロードが完了しました";
 
         if (File.Exists(obje))
         {
@@ -206,20 +211,30 @@ public class EM_Load : MonoBehaviour
     // 階を移動する場合，前の環境マップを削除する際に使用
     public void ResetButton()
     {
-        m_ARSession.Reset();
-        Destroy(ARMap);
-        mapList.Clear();
-        foreach (GameObject target in CommonVariables.destinationList)
+        try
         {
-            Destroy(target);
+            ARSession new_ARSession = new ARSession();
+            m_ARSession = new_ARSession;
+            m_ARSession.Reset();
+            Destroy(ARMap);
+            mapList.Clear();
+            foreach (GameObject target in CommonVariables.destinationList)
+            {
+                Destroy(target);
+            }
+            CommonVariables.destinationList.Clear();
+            foreach (GameObject target in CommonVariables.movingPointList)
+            {
+                Destroy(target);
+            }
+            CommonVariables.movingPointList.Clear();
+            line.enabled = false;
+            SceneManager.LoadScene("LEM_NaviScene", LoadSceneMode.Single);
         }
-        CommonVariables.destinationList.Clear();
-        foreach (GameObject target in CommonVariables.movingPointList) {
-            Destroy(target);
+        catch (Exception e)
+        {
+            statusText.text = e.Message;
         }
-        CommonVariables.movingPointList.Clear();
-        line.enabled = false;
-        statusText.text = "Reset";
     }
 
     private void Update()
@@ -231,6 +246,5 @@ public class EM_Load : MonoBehaviour
 #endif
         if (sessionSubsystem == null)
             return;
-
     }
 }

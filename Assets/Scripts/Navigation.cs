@@ -22,18 +22,23 @@ public class Navigation : MonoBehaviour
         {
             agent = EM_Load.agent;
             line = agent.GetComponent<LineRenderer>();
-            if(BookInformation.floor == -1){
+
+            if (BookInformation.floor == -1)
+            {
                 ExtractKeyword();
                 GameObject ScrollView = GameObject.FindGameObjectWithTag("ScrollView");
                 ScrollView.SetActive(false);
             }
-            
+
+
             GameObject dest = null;
             // ユーザの階と本棚の階が違う場合，エレベータ
             // 同じ階であれば本棚を目的地にセット
             if (CommonVariables.currntFloor != BookInformation.floor)
             {
                 dest = CommonVariables.movingPointList[0];
+                BookSearch.instance.ChangeText("diff");
+                
             }
             else
             {
@@ -45,12 +50,16 @@ public class Navigation : MonoBehaviour
                         if (target.GetComponent<TextMesh>().text.Contains(BookInformation.bookCode))
                         {
                             dest = target;
+                            if (BookSearch.instance)
+                            {
+                                BookSearch.instance.ChangeText("same");
+                            }
                         }
                     }
                 }
                 else
                 {
-                    BookSearch.instance.ChangeText("none");
+                    BookSearch.instance.ChangeText("none", "");
                     return;
                 }
             }
@@ -68,7 +77,6 @@ public class Navigation : MonoBehaviour
             line.enabled = true;
             navAgent = agent.GetComponent<NavMeshAgent>();
             navAgent.radius = 0.1f;
-
             // 目的地がある場合，ナビを表示
             if (dest != null)
             {
@@ -77,16 +85,15 @@ public class Navigation : MonoBehaviour
 
                 path = new NavMeshPath();
                 navAgent.CalculatePath(dest.transform.position, path);
-
                 line.positionCount = path.corners.Length;
                 line.SetPositions(path.corners);
             }
             else
             {
-                BookSearch.instance.ChangeText("failed");
+                BookSearch.instance.ChangeText("failed", "");
             }
         }
-        catch(System.Exception e)
+        catch (System.Exception e)
         {
             BookSearch.instance.ChangeText("error", e.Message);
         }
@@ -107,10 +114,5 @@ public class Navigation : MonoBehaviour
         //本棚のID(007.64/S)を取得
         string code = bookPosition.Substring(index + 3);
         BookInformation.bookCode = Regex.Replace(code, @"[^0-9a-zA-Z/.]+", "");
-
-        if (BookSearch.instance)
-        {
-            BookSearch.instance.ChangeText("search");
-        }
     }
 }

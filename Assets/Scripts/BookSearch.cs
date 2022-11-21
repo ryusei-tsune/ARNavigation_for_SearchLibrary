@@ -10,8 +10,8 @@ public class BookSearch : MonoBehaviour
     // 他のクラス(Navigationクラス)でBookSearchクラスの関数を呼び出すため
     public static BookSearch instance = null;
     // スクレイピングを行う API のエンドポイント
-    private string fetchDataUrl = "https://scraping-okadai-library.herokuapp.com/api/scraping";
-    // private string fetchDataUrl = "https://scraping-okadai-library.onrender.com/api/scraping"; //念のためスクレイピングアプリを別のサービスでもホスティング
+    // private string fetchDataUrl = "https://scraping-okadai-library.herokuapp.com/api/scraping";
+    private string fetchDataUrl = "https://scraping-okadai-library.onrender.com/api/scraping"; //念のためスクレイピングアプリを別のサービスでもホスティング
     private GameObject ScrollView;
     private GameObject panelContent;
     [SerializeField] Text statusText;
@@ -58,12 +58,12 @@ public class BookSearch : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("name", keyword);
         // ここで通信
-        UnityWebRequest request = UnityWebRequest.Post(fetchDataUrl, form);　
+        UnityWebRequest request = UnityWebRequest.Post(fetchDataUrl, form);
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.ProtocolError || request.result == UnityWebRequest.Result.ConnectionError)
         {
-            Debug.Log(request.error);
+            statusText.text = request.error;
         }
         else
         {
@@ -77,46 +77,58 @@ public class BookSearch : MonoBehaviour
                 Book book = JsonUtility.FromJson<Book>(tempInfo);
                 bookList.Add(book);
             }
-
-            ScrollView.SetActive(true);
-
-            // 検索結果の一覧を表示
-            foreach (Book book in bookList)
+            if (bookList.Count == 0)
             {
-                GameObject panel = Instantiate(bookPanel);
-                panel.transform.GetChild(0).GetComponent<Text>().text = book.name;
-                panel.transform.GetChild(1).GetComponent<Text>().text = "著者：" + book.author;
-                panel.transform.GetChild(2).GetComponent<Text>().text = "場所：" + book.position;
-                panel.transform.SetParent(panelContent.transform);
+                statusText.text = "キーワードに一致する本がありません";
+            }
+            else
+            {
+                ScrollView.SetActive(true);
+
+                // 検索結果の一覧を表示
+                foreach (Book book in bookList)
+                {
+                    GameObject panel = Instantiate(bookPanel);
+                    panel.transform.GetChild(0).GetComponent<Text>().text = book.name;
+                    panel.transform.GetChild(1).GetComponent<Text>().text = "著者：" + book.author;
+                    panel.transform.GetChild(2).GetComponent<Text>().text = "場所：" + book.position;
+                    panel.transform.SetParent(panelContent.transform);
+                }
             }
         }
     }
 
     // Navigationクラスで呼ばれ，画面上のテキストの文字を編集
-    public void ChangeText(string type)
+    public void ChangeText(string type, string error)
     {
-        switch (type) {
-            case "search":
-                statusText.text = BookInformation.bookTitle + "\n\n" + BookInformation.bookAuthor + "\n\n" + "所蔵：" + BookInformation.floor + "F, " + BookInformation.bookCode;
-                break;
+        switch (type)
+        {
             case "none":
                 statusText.text = "この階に本棚は登録されていません";
                 break;
             case "failed":
                 statusText.text = "お探しの本は見つかりませんでした";
                 break;
-            default:
-                break;
-        }
-    }
-    public void ChangeText(string type, string error)
-    {
-        switch (type) {
             case "error":
                 statusText.text = "Error: " + error;
                 break;
             default:
                 statusText.text = "Error: unknown";
+                break;
+        }
+    }
+    public void ChangeText(string type)
+    {
+        switch (type)
+        {
+            case "same":
+                statusText.text = BookInformation.bookTitle + "\n\n" + BookInformation.bookAuthor + "\n\n" + "所蔵：" + BookInformation.floor + "F, " + BookInformation.bookCode;
+                break;
+            case "diff":
+                statusText.text = "移動先は" + BookInformation.floor + "階です！";
+                break;
+            default:
+                statusText.text = "Position: unknown";
                 break;
         }
     }
