@@ -91,7 +91,8 @@ public class BookSearch : MonoBehaviour
                     GameObject panel = Instantiate(bookPanel);
                     panel.transform.GetChild(0).GetComponent<Text>().text = book.name;
                     panel.transform.GetChild(1).GetComponent<Text>().text = "著者：" + book.author;
-                    panel.transform.GetChild(2).GetComponent<Text>().text = "場所：" + book.position;
+                    panel.transform.GetChild(2).GetComponent<Text>().text = "出版：" + book.publisher;
+                    panel.transform.GetChild(3).GetComponent<Text>().text = "場所：" + book.position;
                     panel.transform.SetParent(panelContent.transform);
                 }
             }

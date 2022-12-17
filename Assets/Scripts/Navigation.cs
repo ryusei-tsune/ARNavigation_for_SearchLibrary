@@ -38,7 +38,6 @@ public class Navigation : MonoBehaviour
             {
                 dest = CommonVariables.movingPointList[0];
                 BookSearch.instance.ChangeText("diff");
-                
             }
             else
             {
@@ -106,7 +105,7 @@ public class Navigation : MonoBehaviour
         BookInformation.bookAuthor = this.transform.GetChild(1).GetComponent<Text>().text;
 
         // ex: 場所：津島 中央図書館 西館1F 007.64/S 一般図書
-        string bookPosition = this.transform.GetChild(2).GetComponent<Text>().text;
+        string bookPosition = this.transform.GetChild(3).GetComponent<Text>().text;
         // 1F の1を取得(101行目で数字の位置，102行目で値を取得)
         int index = Regex.Matches(bookPosition, @"\d")[0].Index;
         BookInformation.floor = int.Parse(bookPosition[index].ToString());
