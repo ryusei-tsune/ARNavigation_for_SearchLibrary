@@ -55,6 +55,7 @@ public class BookSearch : MonoBehaviour
     {
         string keyword = searchWord.text;
         searchWord.text = "";
+        statusText.text = "現在位置 : " + CommonVariables.currntFloor + "階\n" + "本を検索中！";
         WWWForm form = new WWWForm();
         form.AddField("name", keyword);
         // ここで通信

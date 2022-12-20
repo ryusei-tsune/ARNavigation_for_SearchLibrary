@@ -34,15 +34,12 @@ public class EM_Load : MonoBehaviour
         line = agent.GetComponent<LineRenderer>();
         line.enabled = false;
 
-        // 初期位置(図書館の3階)が決まっている場合・・・81~83行目を適宜変更
-        LoadButton();
-
         // 初期位置が変化する場合，ユーザが環境マップを選択する必要があり・・・84~86行目を使用
         // GetDropdownList();
-
-        // if (BookInformation.floor != -1){
-        //     LoadButton();
-        // }
+        statusText.text = "ロードボタンを押してね！";
+        if (BookInformation.floor != -1){
+            LoadButton();
+        }
     }
 
     //     private void GetDropdownList()
