@@ -21,3 +21,14 @@ SLAM は環境マップの作成と自己位置推定の2つの機能が備わ�
 | NavMesh Extension |  |
 | macOS |  |
 | iPadOS | 13.1.1 |
+
+
+## その他
+* Xcode で build 出来ないとき（原因は端末のOSのバージョンが対応外だった）
+    1. まず，Xcode の Window タブから Device and Simulators を開き，エラーが出ているか確認する．
+    2. If you are certain that Xcode supports development on this device, try disconnecing and reconnecting the deviceが出ている場合，選択し，Detailを開くとより詳細なメッセージを確認することが出来る．そこに英語でバージョン対応外の様な文言があれば，以下の対処で解決する可能性あり．
+    3. FinderでApplication内のXcodeを右クリックし，パッケージの内容を表示を選択．
+    4. Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport内を確認し，自身の端末のバージョンが存在するか確認する．なかった場合は下記を進める，ある場合は別の対処が必要．
+    5. [ここ](https://github.com/iGhibli/iOS-DeviceSupport/tree/master/DeviceSupport)からデバイスのOSに対応するZipファイルをダウンロードする．
+    6. ダウンロード後，解凍し，Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport内に移動させる．
+    7. これで今回はビルド出来る様になった．
