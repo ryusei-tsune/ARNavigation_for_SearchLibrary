@@ -37,9 +37,9 @@ public class EM_Load : MonoBehaviour
         // 初期位置が変化する場合，ユーザが環境マップを選択する必要があり・・・84~86行目を使用
         // GetDropdownList();
         statusText.text = "ロードボタンを押してね！";
-        // if (SearchInformation.floor != -1){
-        //     LoadButton();
-        // }
+        if (SearchInformation.floor != -1){
+            LoadButton();
+        }
     }
 
     //     private void GetDropdownList()
