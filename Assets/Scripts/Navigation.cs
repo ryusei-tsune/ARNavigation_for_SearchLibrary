@@ -23,7 +23,7 @@ public class Navigation : MonoBehaviour
             agent = EM_Load.agent;
             line = agent.GetComponent<LineRenderer>();
 
-            if (BookInformation.floor == -1)
+            if (SearchInformation.floor == -1)
             {
                 ExtractKeyword();
                 GameObject ScrollView = GameObject.FindGameObjectWithTag("ScrollView");
@@ -34,7 +34,7 @@ public class Navigation : MonoBehaviour
             GameObject dest = null;
             // ユーザの階と本棚の階が違う場合，エレベータ
             // 同じ階であれば本棚を目的地にセット
-            if (CommonVariables.currntFloor != BookInformation.floor)
+            if (CommonVariables.currntFloor != SearchInformation.floor)
             {
                 dest = CommonVariables.movingPointList[0];
                 BookSearch.instance.ChangeText("diff");
@@ -46,7 +46,7 @@ public class Navigation : MonoBehaviour
                 {
                     foreach (GameObject target in CommonVariables.destinationList)
                     {
-                        if (target.GetComponent<TextMesh>().text.Contains(BookInformation.bookCode))
+                        if (target.GetComponent<TextMesh>().text.Contains(SearchInformation.bookCode))
                         {
                             dest = target;
                             if (BookSearch.instance)
@@ -101,17 +101,17 @@ public class Navigation : MonoBehaviour
     // 検索結果から選択した本の情報を抽出
     private void ExtractKeyword()
     {
-        BookInformation.bookTitle = this.transform.GetChild(0).GetComponent<Text>().text;
-        BookInformation.bookAuthor = this.transform.GetChild(1).GetComponent<Text>().text;
+        SearchInformation.bookTitle = this.transform.GetChild(0).GetComponent<Text>().text;
+        SearchInformation.bookAuthor = this.transform.GetChild(1).GetComponent<Text>().text;
 
         // ex: 場所：津島 中央図書館 西館1F 007.64/S 一般図書
         string bookPosition = this.transform.GetChild(3).GetComponent<Text>().text;
         // 1F の1を取得(101行目で数字の位置，102行目で値を取得)
         int index = Regex.Matches(bookPosition, @"\d")[0].Index;
-        BookInformation.floor = int.Parse(bookPosition[index].ToString());
+        SearchInformation.floor = int.Parse(bookPosition[index].ToString());
 
         //本棚のID(007.64/S)を取得
         string code = bookPosition.Substring(index + 3);
-        BookInformation.bookCode = Regex.Replace(code, @"[^0-9a-zA-Z/.]+", "");
+        SearchInformation.bookCode = Regex.Replace(code, @"[^0-9a-zA-Z/.]+", "");
     }
 }

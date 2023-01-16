@@ -1,4 +1,4 @@
-# goToBuchNavi (ARNavigation)
+# ARNavigation_for_SearchingLibrary (ARNavigation)
 
 このリポジトリは [岡山大学附属図書館](https://www.lib.okayama-u.ac.jp/) の中央図書館において，目的の本を容易に見つけられるように AR ナビゲーションを行うことを目的としたものである．` Assets/Scripts/Navigation.cs ` と `Assets/Scripts/Scraping.cs` を変更し，岡山大学附属図書館以外で利用することも可能である．
 

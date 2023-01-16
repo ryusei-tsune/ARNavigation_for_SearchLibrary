@@ -37,9 +37,9 @@ public class EM_Load : MonoBehaviour
         // 初期位置が変化する場合，ユーザが環境マップを選択する必要があり・・・84~86行目を使用
         // GetDropdownList();
         statusText.text = "ロードボタンを押してね！";
-        if (BookInformation.floor != -1){
-            LoadButton();
-        }
+        // if (SearchInformation.floor != -1){
+        //     LoadButton();
+        // }
     }
 
     //     private void GetDropdownList()
@@ -72,7 +72,7 @@ public class EM_Load : MonoBehaviour
 
     public void LoadButton()
     {
-        if (BookInformation.floor == -1)
+        if (SearchInformation.floor == -1)
         {
             // 開始時に環境マップをロード．初期位置が決まっている場合
             featurePath = Application.persistentDataPath + "/3.ARMap";
@@ -87,9 +87,9 @@ public class EM_Load : MonoBehaviour
         else
         {
             // 検索結果を基に該当する階に移動した後，環境マップをロード
-            featurePath = Application.persistentDataPath + "/" + BookInformation.floor + ".ARMap";
-            objectPath = Application.persistentDataPath + "/" + BookInformation.floor + ".json";
-            CommonVariables.currntFloor = BookInformation.floor;
+            featurePath = Application.persistentDataPath + "/" + SearchInformation.floor + ".ARMap";
+            objectPath = Application.persistentDataPath + "/" + SearchInformation.floor + ".json";
+            CommonVariables.currntFloor = SearchInformation.floor;
             statusText.text = "現在位置 : " + CommonVariables.currntFloor + "階\n" + "ナビボタンを押してね！";
         }
         if (File.Exists(featurePath))
@@ -230,7 +230,7 @@ public class EM_Load : MonoBehaviour
             }
             CommonVariables.movingPointList.Clear();
             line.enabled = false;
-            SceneManager.LoadScene("LEM_NaviScene", LoadSceneMode.Single);
+            SceneManager.LoadScene("UserScene", LoadSceneMode.Single);
         }
         catch (Exception e)
         {

@@ -9,10 +9,10 @@ EditorBuildSettings:
     path: Assets/Scenes/TitleScene.unity
     guid: 8c2ca51769765ba4fb6f8222d8275283
   - enabled: 1
-    path: Assets/Scenes/CEM_DMScene.unity
+    path: Assets/Scenes/AdminScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes/LEM_NaviScene.unity
+    path: Assets/Scenes/UserScene.unity
     guid: 25fa81f254410fe459e2a0d6f1bc4681
   - enabled: 0
     path: 
