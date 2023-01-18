@@ -124,10 +124,10 @@ public class BookSearch : MonoBehaviour
         switch (type)
         {
             case "same":
-                statusText.text = BookInformation.bookTitle + "\n\n" + BookInformation.bookAuthor + "\n\n" + "所蔵：" + BookInformation.floor + "F, " + BookInformation.bookCode;
+                statusText.text = SearchInformation.bookTitle + "\n\n" + SearchInformation.bookAuthor + "\n\n" + "所蔵：" + SearchInformation.floor + "F, " + SearchInformation.bookCode;
                 break;
             case "diff":
-                statusText.text = "移動先は" + BookInformation.floor + "階です！";
+                statusText.text = "移動先は" + SearchInformation.floor + "階です！";
                 break;
             default:
                 statusText.text = "Position: unknown";

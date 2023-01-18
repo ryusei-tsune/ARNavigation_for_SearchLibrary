@@ -36,7 +36,7 @@ public class EM_Save : MonoBehaviour
 
             featurePath = Application.persistentDataPath + "/" + inputField.text + ".ARMap";
             objectPath = Application.persistentDataPath + "/" + inputField.text + ".json";
-            markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
+            // markerPath = Application.persistentDataPath + "/" + inputField.text + "-MarkerPos.json";
             if (File.Exists(featurePath))
             {
                 File.Delete(featurePath);
@@ -45,10 +45,10 @@ public class EM_Save : MonoBehaviour
             {
                 File.Delete(objectPath);
             }
-            if (File.Exists(markerPath))
-            {
-                File.Delete(markerPath);
-            }
+            // if (File.Exists(markerPath))
+            // {
+            //     File.Delete(markerPath);
+            // }
             SaveObject();
 #if UNITY_IOS
             StartCoroutine(SaveFeature());

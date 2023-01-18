@@ -1,5 +1,5 @@
 // 目的の本の情報を保持（staticを付けることで他のクラスから参照可・・・グローバル変数に近い）
-public static class BookInformation {
+public static class SearchInformation {
     public static int floor = -1;
     public static string bookTitle = "";
     public static string bookAuthor = "";
